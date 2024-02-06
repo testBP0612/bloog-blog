@@ -43,7 +43,7 @@ export const getArticleBySlug = async (slug: string, fields: string[] = []): Pro
 
 export async function getArtistList(search: string = '') {
   const params = new URLSearchParams();
-  ['coverImage', 'date', 'description', 'excerpt', 'slug', 'tags', 'title', 'timeReading', 'ogImage'].forEach((key) =>
+  ['coverImage', 'date', 'description', 'excerpt', 'slug', 'tags', 'title', 'timeReading', 'ogImage', 'thumbnailUrl'].forEach((key) =>
     params.append('fields', key)
   );
   const artists: Article[] = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/blog?${params.toString()}`).then(

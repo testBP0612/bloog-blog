@@ -97,17 +97,14 @@ const config: Config = {
             color: theme('colors.gray.700'),
             h1: {
               fontWeight: 'bold',
-              letterSpacing: '0.1em',
               color: colors.darkText,
             },
             h2: {
               fontWeight: 'bold',
-              letterSpacing: '0.08em',
               color: colors.darkText,
             },
             h3: {
               fontWeight: 'semi-bold',
-              letterSpacing: '0.05em',
               color: colors.darkText,
             },
             h4: {
@@ -127,7 +124,7 @@ const config: Config = {
               color: colors.darkText[500],
             },
             strong: {
-              color: colors.quaternary[700],
+              color: colors.darkText[500],
             },
             code: {
               backgroundColor: colors.darkText,
@@ -178,7 +175,7 @@ const config: Config = {
               color: colors.lightText[500],
             },
             strong: {
-              color: colors.quaternary[300],
+              color: colors.lightText[500],
             },
             code: {
               backgroundColor: theme('colors.gray.700'),

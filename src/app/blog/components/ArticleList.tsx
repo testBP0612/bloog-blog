@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { type ReadTimeResults } from 'reading-time';
 
 import Tag from '@components/Tag';
@@ -13,10 +14,13 @@ interface ArticleItemProps {
 
 const ArticleItem = async ({ article }: ArticleItemProps) => {
   const timeReading: ReadTimeResults = JSON.parse(article.timeReading);
-  
+
   return (
-    <div className="space-y-2 xl:grid xl:grid-cols-4 xl:items-baseline xl:space-y-0">
-      <dl>
+    <div className="space-y-2 xl:grid xl:grid-cols-6 xl:items-start xl:space-y-0">
+      <div className="flex flex-col space-y-2 xl:col-span-1 items-center">
+        <Image src={article.thumbnailUrl} alt={article.title} width={200} height={200} className="rounded-lg" />
+      </div>
+      <dl className="xl:col-span-1 flex flex-col items-center">
         <dt className="sr-only">Published on</dt>
         <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
           <time dateTime={article.date}>{article.date}</time>
@@ -26,9 +30,9 @@ const ArticleItem = async ({ article }: ArticleItemProps) => {
           <span className="text-xs">{timeReading.text}</span>
         </dl>
       </dl>
-      <div className="space-y-3 xl:col-span-3">
+      <div className="space-y-3 xl:col-span-4">
         <div>
-          <h3 className="text-2xl font-bold leading-10 tracking-tight}">
+          <h3 className="text-2xl font-bold tracking-tight">
             <Link href={`/blog/${article.slug}`} className="text-gray-900 dark:text-gray-100">
               {article.title}
             </Link>

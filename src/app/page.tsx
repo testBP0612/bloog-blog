@@ -1,12 +1,13 @@
-import Image from 'next/image';
+import Link from 'next/link';
 
 import MainContainer from '@components/layout/MainContainer';
+import SimpleArticleList from '@app/components/SimpleArticleList';
 
 export default function Home() {
   return (
     <MainContainer>
       <section
-        className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-cover bg-center"
+        className="w-full bg-cover bg-center"
         style={{
           backgroundImage: "url('/placeholder.svg?height=800&width=1200')",
         }}
@@ -22,6 +23,16 @@ export default function Home() {
               </p>
             </div>
           </div>
+        </div>
+        <SimpleArticleList />
+        {/* Read more */}
+        <div className="flex justify-center mt-8">
+          <Link
+            href="/blog"
+            className="inline-flex items-center px-4 py-2 text-lg font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700"
+          >
+            Read more 
+          </Link>
         </div>
       </section>
     </MainContainer>

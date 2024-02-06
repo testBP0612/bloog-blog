@@ -1,0 +1,148 @@
+---
+title: Vercel 靜態圖片檔案快取機制
+date: '2023-08-03'
+description: 介紹部署在 Vercel 網站中的靜態圖片如何運用快取機制，透過 HTTP 標頭如 Cache-Control 和 ETag 控制，實現快速加載並優化網站性能。
+thumbnailUrl: /images/blog/vercel-image-cache/banner.webp
+tags: ['CI/CD']
+---
+
+## 理解 HTTP Cache 機制
+
+快取是用於暫時儲存網路上傳輸的資源，以便未來的請求可以快速獲取。HTTP 快取是這種技術的一種實現方式，通過它，網頁瀏覽器（或其他代理）可以在本地儲存網路資源的副本，並在下次瀏覽同一頁面時重複使用它們，而不必再次向後端請求同樣的資源。
+
+基本的快取行為由各種 HTTP 標頭控制，其中包括但不限於以下幾種：
+
+### **Cache-Control / Expires**
+
+- `Cache-Control` 是控制 HTTP 快取的主要方式，它包含多種指令：
+    - `public`：表示回應可以被任何對象（包括：發送請求的客戶端、CDN 和其他）快取。
+    - `private`：表明回應專用於單一的用戶的快取機制。
+    - `no-cache`：要求每次進行快取的回應必須向伺服器驗證是否已經改變，確保數據的即時性。
+    - `no-store`：禁止快取任何回應的內容，這常常用於敏感資訊，防止資訊被快取並在後續被讀取。
+    - `max-age`：用於定義資源在本地快取中保存並被認定為新鮮的時間。它的值是一個表示時間的秒數。
+- `Expires`：使用使用者的**系統時間**定義了一個日期 / 時間，之後這個回應被認為過期。
+
+如果沒有設定 `max-age` 和 `Expires`，那麼將使用 `Last-Modified` 來決定資源的新鮮度。
+如果有 `max-age`，那麼 `Expires` 會被忽略。
+
+### **Last-Modified / If-Modified-Since**
+
+- `Last-Modified`：它表示資源最後被修改的時間。當瀏覽器首次向後端請求一個資源時，後端會在 response 中包含 `Last-Modified` 標頭。
+
+```
+HTTP/1.1 200 OK
+Last-Modified: Wed, 21 Oct 2015 07:28:00 GMT
+```
+
+- `If-Modified-Since`： 值就是之前從 `Last-Modified` 標頭中獲得的時間，在後續的請求中，詢問後端資源自最後修改以來有沒有變化。
+
+```
+GET /page HTTP/1.1
+If-Modified-Since: Wed, 21 Oct 2015 07:28:00 GMT
+```
+
+如果瀏覽器想要檢查該資源是否已被更新，在請求中包含 `If-Modified-Since` 標頭。這個標頭的值就是之前從 `Last-Modified` 標頭中獲得的時間。如果沒有變化，就使用快取，後端會返回 `304（Not Modified）` 狀態碼。否則，它會返回新的資源內容並更新 `Last-Modified` 標頭。
+
+### **ETag / If-None-Match**
+
+- `ETag`：當後端首次傳送一個資源時，包含一個 `Etag` 標頭，用於確定資源的版本。它是資源內容的一種指紋，如果資源改變，`ETag` 也會變。
+
+```
+HTTP/1.1 200 OK
+Etag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+```
+
+- `If-None-Match`：與 `If-Modified-Since` 相似，但是用來比較的是資源的 `Etag`。
+
+```
+GET /page HTTP/1.1
+If-None-Match: "33a64df551425fcc55e4d42a148795d9f25f89d4"
+```
+
+當客戶端再次訪問此資源時，會將此標籤的值與後端上的值進行比較，如果兩者一致（即資源未被修改過），則後端返回 `304（Not Modified）` 狀態碼，告訴客戶端使用快取的版本即可。
+
+## 瀏覽器快取與 CDN 快取
+
+### **瀏覽器快取**
+
+當訪問一個網頁時，瀏覽器會將該頁面的一些內容（如圖片、CSS、JavaScript 文件等）儲存在本地的快取中。當再次訪問同一個網頁時，瀏覽器可以直接從快取中獲取這些內容，而不需要再次從伺服器下載。
+
+### **CDN 快取**
+
+CDN（內容傳遞網路）將網頁內容儲存在全球各地的伺服器中。當用戶訪問一個網頁時，CDN 會從最接近用戶的伺服器中提供內容。CDN 也會將內容儲存在快取中，以便快速提供給用戶。
+
+要查看資源是從瀏覽器快取還是 CDN 快取的，如果標頭中有 `x-cache: HIT` 或類似的字段，那麼該內容可能是從 CDN 快取獲取的。如果標頭中有 `cache-control: public, max-age=xxx` 或類似的字段，並且該內容的大小（size）顯示為 `from disk cache` 或 `from memory cache`，那麼該內容可能是從瀏覽器快取獲取的。
+
+當 CDN 快取和瀏覽器快取同時存在時，瀏覽器快取通常會優先被使用。
+
+# Vercel 的快取行為
+
+Vercel 的圖片會自動在 [Vercel Edge Network](https://vercel.com/docs/concepts/edge-network/overview) 上進行快取。重新部署應用不會使圖片快取失效。但是，如果更改了圖片，快取將失效並提供新的圖片。（[https://vercel.com/docs/concepts/image-optimization#caching](https://vercel.com/docs/concepts/image-optimization#caching) ）
+
+可以在 Vercel 函數中，或在 `vercel.json` 或 `next.config.js` 中的路由定義中定義 `Cache-Control` 標頭。**以下官方範例**：
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        source: '/about',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 's-maxage=1, stale-while-revalidate=59',
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;
+```
+
+## 靜態檔案快取機制
+
+[https://vercel.com/docs/concepts/edge-network/caching#static-files-caching](https://vercel.com/docs/concepts/edge-network/caching#static-files-caching)
+
+會自動為靜態文件（例如HTML、CSS、JavaScript、圖片等）提供CDN快取，這不需要進行任何特殊設定。當靜態檔案請求後，會自動保存在 Vercel Edge Network 最長達 31天。預設會防止客戶端（例如瀏覽器）在本地快取檔案，`Cache-Control` 會設定成 `public, max-age=0, must-revalidate`。
+
+## 動態資源快取機制
+
+[https://vercel.com/docs/concepts/edge-network/caching#using-vercel-functions](https://vercel.com/docs/concepts/edge-network/caching#using-vercel-functions)
+
+Vercel 對於動態內容，如 Serverless Functions（包含 SSR）和 Edge Functions 的響應，支持兩種針對控制快取的標頭：
+
+- `CDN-Cache-Control`：允許分別控制 Vercel Edge Cache 或其他 CDN 快取和瀏覽器的快取。瀏覽器不會受到此標頭的影響。
+- `Vercel-CDN-Cache-Control`：允許特別控制 Vercel Edge Cache。其他CDN和瀏覽器不會受到此標頭的影響。
+
+如果沒有特別設定這兩種標頭，Vercel 並不會針對動態內容進行快取。
+
+# 觀察本部落格上的快取行為
+
+因為這個部落格就是部署在 Vercel 上，所以以本部落格的靜態圖片檔案為例，透過開發者工具觀察結果，首先關注 Response：
+
+- `X-Vercel-Cache`：表示一個請求是否被 Vercel 的 CDN 快取。如果值為 `HIT`，則表示該請求已被快取；如果值為 `MISS`，則表示該請求未被快取。[https://vercel.com/docs/concepts/edge-network/headers#x-vercel-cache](https://vercel.com/docs/concepts/edge-network/headers#x-vercel-cache)
+- `X-Vercel-Id`：這個標頭包含了用於觀察的唯一請求 ID。如果需要與 Vercel 的支援團隊討論特定的請求，這個 ID 可以幫助他們快速找到相關的日誌和信息，另外也包含了一些額外資訊可以知道 [CDN](https://vercel.com/docs/concepts/edge-network/regions) 的所在位置。[https://vercel.com/docs/concepts/edge-network/headers#x-vercel-id-req](https://vercel.com/docs/concepts/edge-network/headers#x-vercel-id-req)
+- `Cache-Control`：
+    - `public`：這表示響應可以被任何快取存儲。
+    - `max-age=0`：這表示快取的內容應立即過期。在這之後，快取必須重新驗證內容的新鮮度。
+    - `must-revalidate`：這表示一旦快取的內容過期（在這種情況下，由於 `max-age=0`，所以立即過期），快取必須向原始後端發送請求，以驗證該內容是否已被修改。
+
+如果清除快取重新載入則會看到 `ETag`
+
+再來關注 Request：
+
+`If-None-Match`：其值為先前後端提供的 `ETag` 值。如果資源未變更，後端會回應一個 `304` 狀態碼。
+
+## 結果
+
+一如 Vercel 官方文件所寫到，透過設定 `Cache-Control` 的方式防止瀏覽器快取圖片，全部由 CDN 快取進行靜態資源控管。
+
+當觀察到從 Vercel 獲取的靜態圖片文件返回 `200 OK` 狀態碼，即使 `X-Vercel-Cache` 標頭顯示為 `HIT`，這一現象可能初看起來令人困惑，特別是當我們預期在資源被快取時收到 `304 Not Modified` 的響應。
+
+然後我們也看到 `Cache-Control` 標頭的設置為 `public, max-age=0, must-revalidate`，明確要求即使資源被快取，每次請求仍需向原始伺服器確認資源的最新狀態。這種設定促使 CDN 在每次請求時考慮是否需要更新其快取中的副本，即便如此，它也可能因為已經確認資源未改變或基於其內部的快取更新策略，而選擇從快取中服務資源並返回 `200 OK`。
+
+此外，這也反映出 CDN 及其他快取代理如何處理快取標頭和驗證機制，有時候它們可能選擇基於效能考量或對 `must-revalidate` 指令的解釋，從快取中返回資源而不是發送 `304 Not Modified` 響應。這種行為有助於減少後端負擔，加快速度。
