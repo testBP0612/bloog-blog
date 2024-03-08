@@ -1,0 +1,157 @@
+---
+title: 使用 swagger-typescript-api 打造自動生成 API Endpoint 的小工具
+date: '2023-07-20'
+description: 介紹自己打造的一個小工具，能夠輕鬆地從本地或線上讀取 JSON 檔案，並透過 swagger-typescript-api 套件進行 codegen。
+thumbnailUrl: /images/blog/typescript-api-codegen/banner.webp
+tags: ['typescript', 'codegen']
+---
+
+## 前言
+
+因為公司的專案目前處於 Javascript 轉 Typescript 的迭代過程，一直以來前端手動撰寫 API Endpoint 都沒有 Response data 的類型，在開發上容易有拼寫錯誤或欄位名稱取錯的問題，若沒有適當的測試保護，容易造成一些潛在的風險。若是能在 API 請求的回傳定義類型則可夠更好地理解返回的資料，並且能提供 Intelligent code completion（智能代碼補全）功能。
+
+為了改進這件事，本來是想手動替 API Endpoint 加上型別，但想想這樣也不太實際，後來找到了 [swagger-typescript-api](https://www.npmjs.com/package/swagger-typescript-api) 這個套件可以解決我們的痛點，於是就把它再包裝一下，誕生了這個 codegen 小工具。
+
+## swagger-typescript-api 簡介
+
+它是一個基於 Node.js 的工具包，其主要功能是根據 OpenAPI（也稱為 Swagger）規範自動生成 TypeScript 的 API Endpoint，生成的結果也可以選用 Fetch 或 Axios 這兩套流行的 HTTP 請求工具（這篇文章主要使用 Axios）。同時產好的 Type 也完全符合 Backend 資料庫的欄位命名。
+
+具體的運作方式非常簡單。首先確保有一個 Swagger 規範 JSON 文件，這是必備條件。接著連套件本身都不用安裝，直接下 npx 指令：
+
+```
+npx swagger-typescript-api -p path/input/swagger.json -o path/ouput/
+```
+
+如此就能生成 API Endpoint 及 Type 文件了。其中，`path/input/` 是 Swagger JSON 檔案的路徑，`output/` 是生成檔案的存放路徑，接著就會根據 `swagger.json` 內容所產生 Type 定義檔案及 API Endpoint。
+
+套件本身也有提供豐富的客製化選項，這時只用 Command-Line 就顯得不夠了，改在文件中使用：
+
+```javascript
+/* 擷取自官方範例 */
+const { generateApi } = require('swagger-typescript-api');
+const path = require("path");
+const fs = require("fs");
+
+generateApi({
+  name: "MySuperbApi.ts",
+  output: path.resolve(process.cwd(), "./src/__generated__"),
+  url: 'http://api.com/swagger.json',
+  input: path.resolve(process.cwd(), './foo/swagger.json'),
+  templates: path.resolve(process.cwd(), './api-templates'),
+  httpClientType: "axios", // or "fetch"
+  modular: true,
+  // ... 更多參數可參考官方文件
+})
+```
+
+先關注 `output`, `url` 這兩個參數，就是前面提到必須提供的 Swagger JSON 檔案路徑位置，分別是本地路徑及 Swagger JSON 線上網址，擇一填入即可。強調是「線上 JSON 文件」的網址，拿官方範例來說，不是 https://petstore.swagger.io/ 文件本身的網址，而是必須提供 https://petstore.swagger.io/v2/swagger.json 才對。
+
+`ouput`: codegen 產物的輸出位置。
+
+`modular`: 用於指示生成的 API 是否為模組結構。預設是 `false` 會把 API Endpoint 及 Type 定義檔案生成單一文件，設定為 `true` 情況下，它將根據 Swagger 定義的模組，生成多個單獨的 TypeScript 文件。一般還是希望拆分出 Type 定義檔案而不是都混仔一起。
+
+`templates`: 可以根據需要自訂化 codegen 範本，將範本放置在指定的路徑中，並修改程式碼來指向自己的範本路徑。
+
+官方有提供[範本](https://github.com/acacode/swagger-typescript-api/tree/master/templates)下載，直接拿來修改即可。自訂化範本是 [ejs 格式](https://ejs.co/)，例如在最上方加入 `eslint-disable` 及 `tslint:disable` 避免 ESLint 報錯。另外要稍微注意的是如果要使用 `/templates/modular` 的範本必須將 `modular` 設為 `true`。
+
+`httpClientType`: 生成的 HTTP 請求工具，可以填入 `fetch` 或是 `axios`。
+
+## codegen 小工具
+
+在認識完 `swagger-typescript-api` 之後，介紹一下我撰寫的[小工具](https://github.com/testBP0612/swagger-codegen)，主要是透過 Node.js 的一些套件輔助，簡化 codegen 的前置作業。具體運作方式分為兩個模式：
+
+1. 線上模式：提供 Swagger JSON 的 URL，腳本會下載 Swagger JSON，然後將其寫入本地文件。一旦 JSON 文件就緒，腳本就會呼叫 `generateApi` 以產生 API。
+2. 本地模式：提供 Swagger JSON 的本地文件，腳本直接呼叫 `generateApi` 以產生 API。
+
+codegen 結果採用官方範例提供的 `/templates/base` 作為範本，啟用 `modular` 模式，一樣拿 [petstore](https://petstore.swagger.io/v2/swagger.json) 來使用。生成的結果在 `/api` 路徑，輸入檔案則放在 `/json` 路徑，如圖所示：
+
+![codegenResult](/images/blog/typescript-api-codegen/codegenResult.png)
+
+`data-contracts.ts`: Type 的定義檔案，命名完全遵照 Swagger 內容。當在專案的一些地方需要 API Type 的時候可以單獨引入 `data-contracts.ts`，避免引入其他不必要的程式碼。
+
+`http-client.ts`: 根據 `httpClientType` 所選的 HTTP 請求工具而定的類別封裝實例，填入 `axios` 就是使用 `axios` 向 API 發送請求。
+
+`Pet.ts`, `Store.ts`, `User.ts`: 這些 API Endpoint 的檔案是根據 Swagger 定義的 `paths` 自動產生的。生成依據於 URL 路徑中的第一個單詞。在 petstore 的例子中，`paths` 的定義如下所示：
+
+```json
+"paths": {
+  "/pet/{petId}/uploadImage": { ... },
+  "/pet": { ... },
+  "/store/order": { ... },
+  "/store/order/{orderId}": { ... },
+  "/user/createWithArray": { ... },
+  "/user/createWithList": { ... },
+  ...
+}
+```
+
+根據這些 `paths`，檔案按照 URL 中的首個關鍵字（如 pet、store、user）來決定。有些 API URL 會將版本作為首個關鍵字，常見像是以 `/v1.1` 為開頭，這時生成的檔案就會只有一個 `V11.ts`。另外也查了一下官方文件，API 不直接提供選項來更改這些文件的名稱，只能在生成文件後手動重命名這些文件，或是在函數的回調中做一些操作。
+
+只要兩個簡單的步驟 codegen 就完成了，如果不管檔案命名，就能直接將 `/api` 內的檔案複製到專案中使用。
+
+## 如何使用 codegen API
+
+現在已經使用 codegen 工具產生了 API Endpoint，是基於 Axios 的 HTTP 請求工具，用於與後端服務互動。以下以 React hook 模式為示範，如何在專案中使用這個產生的 API 的步驟，當然稍微修改後都能通用其他框架：
+
+```javascript
+// 導入生成的 API
+import { Pet } from './path/Pet';
+import { User } from './path/User';
+import { Store } from './path/Store';
+
+export default function useApiEndpoint() {
+  // 創建 API 客戶端的實例
+  const pet = new Pet();
+  const user = new User();
+  const store = new Store();
+
+  // 返回客戶端的實例
+  return {
+    pet,
+    user,
+    store,
+  };
+}
+```
+
+使用創建的 API 實例只需要調用需要的 API 方法。例如，如果想要下一個訂單（PlaceOrder），帶入所需的 body 和其他請求參數即可。將滑鼠移到實例上，IDE 也能解讀對應的資訊，大幅減少串接 API 時不停去對照文件的時間：
+
+```javascript
+const apiEndpoint = useApiEndpoint();
+
+const handlePlaceOrder = async () => {
+  try {
+    await apiEndpoint.store.placeOrder({
+      id: 1,
+      quantity: 1,
+      status: 'approved', // 有智能提示的功能 😍
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+```
+
+如果是 `GET` 方法，回傳的資料也已經自動帶上 Type，在取用上十分便利。
+
+![codeTips](/images/blog/typescript-api-codegen/codeTips.png)
+
+當然在使用 `axios` 時，強大的注入器（Instance）能填入 API 安全驗證（例如使用 API 金鑰）或是根據實際情況調整共用的錯誤處理邏輯和 API 調用的結果處理，可以在創建實例後提供：
+
+```javascript
+export default function useApiEndpoint() {
+  const axiosInstance = axios.create({
+    // 在這裡添加 axios 共用的設定
+  });
+
+  const pet = new Pet();
+  pet.instance = axiosInstance;
+  // ...
+}
+```
+
+## 後記
+
+其實在找相關套件的時候，有看到 Swagger 官方本身提供的 codegen 工具 [Swagger Codegen CLI](https://swagger.io/docs/open-source-tools/swagger-codegen/)，根據我的嘗試，它也能夠產生類似的效果。然而，使用該工具需要 Java，這對網頁前端開發者來說可能是一個額外的學習成本。此外，雖然 Swagger Codegen 提供了廣泛的客製化選項，但在相比之下，swagger-typescript-api 在客製化方面更為簡單，這也許是因為我對 Node.js 環境比較熟悉的緣故。
+
+儘管如此，Swagger Codegen 也是一個不錯的選擇。不同的工具有著各自的優勢和限制，保持一個開放的心態，探索和比較不同的選項。找到最適合的項目的解決方案是最重要的。
