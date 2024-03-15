@@ -38,14 +38,14 @@ import { ReactComponent as logo } from "./logo.svg";
 
 ```js
 webpack(config) {
-	config.module.rules.push({
-		// .svg 結尾的檔案才進行處理
-		test: /\.svg$/i,
-		// 限制 jsx, tsx 的檔案才能引入 SVG
-		issuer: /\.[jt]sx?$/,
-		use: ['@svgr/webpack'],
-	})
-	return config
+  config.module.rules.push({
+    // .svg 結尾的檔案才進行處理
+    test: /\.svg$/i,
+    // 限制 jsx, tsx 的檔案才能引入 SVG
+    issuer: /\.[jt]sx?$/,
+    use: ['@svgr/webpack'],
+  })
+  return config
 },
 ```
 
@@ -57,8 +57,8 @@ import { Icon } from '../public/icons/x.svg';
 const Home: NextPage = () => {
   return (
     <main>
-			<h1 className="text-3xl font-bold underline">Hello world!</h1>
-			<Icon />
+      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+      <Icon />
     </main>
   );
 };
@@ -68,7 +68,7 @@ export default Home;
 
 但是接下來會馬上遇到這個問題，怎麼回事？
 
-```
+```shell
 Cannot find module '../public/icons/x.svg' or its corresponding type declarations.ts(2307)
 ```
 
@@ -91,13 +91,13 @@ declare module '*.svg' {
 // ...
 ```
 
-要進行修復非常簡單。在專案的根目錄中，新增一個名為 `/types` 的資料夾，並在其中創造 `.d.ts` 的檔案，這是 TypeScript 的聲明檔案，用於描述 JavaScript 程式庫或原生環境的型別。
+要修正這個問題很簡單。在你的專案根目錄下，新增一個名叫 `/types` 的資料夾，並在裡面創建一個 `.d.ts` 檔案，這是 TypeScript 的宣告檔，用來描述 JavaScript 函式庫或是瀏覽器環境的型別。
 
-在 `.d.ts` 檔案中，可以覆寫一些原生型別，例如當你在使用 GTM 事件時，可能會需要訪問 `window.dataLayer`。然而，原生的 `window` 介面並沒有 `dataLayer` 屬性，這可能導致型別錯誤。我們可以通過在 `global.d.ts` 檔案中為 `window` 加入 `dataLayer` 屬性的型別定義，為 `dataLayer` 提供正確的型別註解。
+在 `.d.ts` 檔案裡，你可以重寫一些內建型別，比如說，當你需要使用到 GTM 事件時，你可能會用到 `window.dataLayer`。但標準的 `window` 介面並沒有包含 `dataLayer` 屬性，這會導致型別錯誤。我們可以透過在一個名為 `global.d.ts` 的檔案裡，為 `window` 添加 `dataLayer` 屬性的型別宣告，來給 `dataLayer` 提供正確的型別。
 
-接下來，在 `tsconfig.json` 檔案中，新增一行 `"typeRoots": ["./types"]` 的設定。這個設定告訴 TypeScript 在解析型別定義時，應該查找位於 `/types` 資料夾下的 `.d.ts` 檔案。
+首先在 `tsconfig.json` 檔案裡，加入 `"typeRoots": ["./types"]` 這一行設定。這行設定會告訴 TypeScript 在解析型別宣告時，應該要檢視位於 `/types` 資料夾下的 `.d.ts` 檔案。
 
-現在，我們可以在 `/types` 內創建一個名為 `images.d.ts` 的檔案，並將原始的 `/node_modules/next/image-types/global.d.ts` 檔案的內容複製到這個新的檔案中。我們需要特別注意替換掉 *.svg 的模組聲明。根據具體需求，可以根據專案的環境和使用的工具，修改相關的型別註解。這邊提供一個範例：
+然後建立名為 `/types` 的資料夾，在裡面建立一個名為 `images.d.ts` 的檔案，並把原本在 `/node_modules/next/image-types/global.d.ts` 的內容複製過去。這裡要將 `*.svg` 的宣告替換掉。根據你的專案情況和使用的工具，你可能需要修改相關的型別註釋。以下是一個例子：
 
 ```ts
 declare module '*.svg' {
@@ -107,7 +107,14 @@ declare module '*.svg' {
 }
 ```
 
-更棒的是，因為定義的 `props: React.SVGProps<SVGElement>` ，所以你需要任何的 SVG 屬性直接打一個關鍵字，會自動跳出程式碼提示告訴你可用的屬性，修改起來更便利。
+因為定義了 `props: React.SVGProps<SVGElement>` ，所以你需要任何的 SVG 屬性時直接打一個關鍵字，會自動跳出程式碼提示（Intelligent code completion）告訴你可用的屬性，修改起來更便利。
+
+最後，你可能還需要將 `next-env.d.ts` 內的圖片型別定義宣告刪除，才能確保 TypeScript 不會加載並使用它原始的型別定義。`next-env.d.ts` 是 Next.js 專案中自動生成的一個 TypeScript 宣告檔案。這個檔案的主要目的是讓 TypeScript 能夠識別 Next.js 提供的型別定義，以及與 Next.js 相關的型別（比如圖片檔案的）。
+
+```ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" /> <= 移除這行
+```
 
 ![svgIntelliSense](/images/blog/use-svgr-in-nextjs/svgIntelliSense.png)
 

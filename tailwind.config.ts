@@ -127,10 +127,17 @@ const config: Config = {
               color: colors.darkText[500],
             },
             code: {
-              backgroundColor: colors.darkText,
+              backgroundColor: colors.lightText[400],
               padding: '0.2em 0.4em',
               borderRadius: '4px',
-              color: colors.primary[400],
+              color: colors.darkText[400],
+              fontWeight: '400',
+            },
+            'code::before': {
+              content: '',
+            },
+            'code::after': {
+              content: '',
             },
             pre: {
               backgroundColor: colors.darkText,
@@ -179,6 +186,7 @@ const config: Config = {
             },
             code: {
               backgroundColor: theme('colors.gray.700'),
+              color: colors.lightText[400],
             },
             pre: {
               backgroundColor: theme('colors.gray.700'),

@@ -29,14 +29,14 @@ tags: ['CI/CD']
 
 - `Last-Modified`：它表示資源最後被修改的時間。當瀏覽器首次向後端請求一個資源時，後端會在 response 中包含 `Last-Modified` 標頭。
 
-```
+```shell
 HTTP/1.1 200 OK
 Last-Modified: Wed, 21 Oct 2015 07:28:00 GMT
 ```
 
 - `If-Modified-Since`： 值就是之前從 `Last-Modified` 標頭中獲得的時間，在後續的請求中，詢問後端資源自最後修改以來有沒有變化。
 
-```
+```shell
 GET /page HTTP/1.1
 If-Modified-Since: Wed, 21 Oct 2015 07:28:00 GMT
 ```
@@ -47,14 +47,14 @@ If-Modified-Since: Wed, 21 Oct 2015 07:28:00 GMT
 
 - `ETag`：當後端首次傳送一個資源時，包含一個 `Etag` 標頭，用於確定資源的版本。它是資源內容的一種指紋，如果資源改變，`ETag` 也會變。
 
-```
+```shell
 HTTP/1.1 200 OK
 Etag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
 ```
 
 - `If-None-Match`：與 `If-Modified-Since` 相似，但是用來比較的是資源的 `Etag`。
 
-```
+```shell
 GET /page HTTP/1.1
 If-None-Match: "33a64df551425fcc55e4d42a148795d9f25f89d4"
 ```
