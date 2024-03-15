@@ -17,9 +17,9 @@ const ArticleItem = async ({ article }: ArticleItemProps) => {
 
   return (
     <div className="space-y-2 xl:grid xl:grid-cols-6 xl:items-start xl:space-y-0">
-      <div className="flex flex-col space-y-2 xl:col-span-1 items-center">
+      <Link className="flex flex-col space-y-2 xl:col-span-1 items-center" href={`/blog/${article.slug}`}>
         <Image src={article.thumbnailUrl} alt={article.title} width={200} height={200} className="rounded-lg" />
-      </div>
+      </Link>
       <dl className="xl:col-span-1 flex flex-col items-center">
         <dt className="sr-only">Published on</dt>
         <dd className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
@@ -32,7 +32,7 @@ const ArticleItem = async ({ article }: ArticleItemProps) => {
       </dl>
       <div className="space-y-3 xl:col-span-4">
         <div>
-          <h3 className="text-2xl font-bold tracking-tight">
+          <h3 className="text-2xl font-bold tracking-tight mb-1">
             <Link href={`/blog/${article.slug}`} className="text-gray-900 dark:text-gray-100">
               {article.title}
             </Link>
