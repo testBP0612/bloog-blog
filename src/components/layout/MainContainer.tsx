@@ -7,7 +7,7 @@ interface MainContainerProps {
 export const containerClassName = 'mx-auto max-w-3xl px-4 sm:px-6 xl:max-w-5xl xl:px-0';
 
 const MainContainer = ({ children }: MainContainerProps) => {
-  return <div className={`min-h-screen ${containerClassName}`}>{children}</div>;
+  return <div className={containerClassName}>{children}</div>;
 };
 
 export default MainContainer;
