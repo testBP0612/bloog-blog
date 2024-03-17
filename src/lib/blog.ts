@@ -62,7 +62,7 @@ export async function getArtistList(search: string = '') {
     const artists = await response.json();
 
     if (!Array.isArray(artists)) {
-      throw new TypeError("Expected an array of artists, but did not receive one.");
+      throw new TypeError('Expected an array of artists, but did not receive one.');
     }
 
     const filteredArtists = artists.filter((frontMatter) => {
@@ -73,13 +73,15 @@ export async function getArtistList(search: string = '') {
     return search ? filteredArtists : artists;
   } catch (error) {
     console.error('Error fetching artist list:', error);
-    return [];  // 在錯誤情況下返回空陣列
+    return []; // 在錯誤情況下返回空陣列
   }
 }
 
 export async function getArtistBySlug(post: string) {
   try {
-    const response = await fetch(`${BASE_API_URL}/api/blog/slug?post=${post}`);
+    const response = await fetch(`${BASE_API_URL}/api/blog/slug?post=${post}`, {
+      cache: 'no-store',
+    });
     if (!response.ok) {
       throw new Error(`An error occurred: ${response.statusText}`);
     }
@@ -87,6 +89,6 @@ export async function getArtistBySlug(post: string) {
     return artist;
   } catch (error) {
     console.error('Error fetching artist by slug:', error);
-    return null;  // 在錯誤情況下返回null
+    return null; // 在錯誤情況下返回null
   }
 }
