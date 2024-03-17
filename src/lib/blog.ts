@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import readingTime, { type ReadTimeResults } from 'reading-time';
 
 import { type BlogArticle, Article } from 'types/blog';
+import { BASE_API_URL } from '@constants/env';
 
 const articlesDirectory = path.join(process.cwd(), 'src/posts');
 
@@ -41,12 +42,21 @@ export const getArticleBySlug = async (slug: string, fields: string[] = []): Pro
 
 export async function getArtistList(search: string = '') {
   const params = new URLSearchParams();
-  ['coverImage', 'date', 'description', 'excerpt', 'slug', 'tags', 'title', 'timeReading', 'ogImage', 'thumbnailUrl'].forEach((key) =>
-    params.append('fields', key)
-  );
-  const artists: Article[] = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/blog?${params.toString()}`).then(
-    (res) => res.json()
-  );
+  [
+    'coverImage',
+    'date',
+    'description',
+    'excerpt',
+    'slug',
+    'tags',
+    'title',
+    'timeReading',
+    'ogImage',
+    'thumbnailUrl',
+  ].forEach((key) => params.append('fields', key));
+  const artists: Article[] = await fetch(`${BASE_API_URL}/api/blog?${params.toString()}`, {
+    cache: 'no-store',
+  }).then((res) => res.json());
 
   const filteredArtists = artists.filter((frontMatter) => {
     const searchContent = frontMatter.title + frontMatter.description + frontMatter.tags.join(' ');
@@ -57,9 +67,9 @@ export async function getArtistList(search: string = '') {
 }
 
 export async function getArtistBySlug(post: string) {
-  const artist: matter.GrayMatterFile<string> = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/blog/slug?post=${post}`
-  ).then((res) => res.json());
+  const artist: matter.GrayMatterFile<string> = await fetch(`${BASE_API_URL}/api/blog/slug?post=${post}`).then((res) =>
+    res.json()
+  );
 
   return artist;
 }
