@@ -3,8 +3,8 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getAllSlugs, getArticleBySlug } from '@lib/blog';
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   try {
-    const { searchParams } = new URL(request.url);
     const fieldsParam = searchParams.getAll('fields');
     const fields = Array.isArray(fieldsParam) ? fieldsParam : [fieldsParam];
 

@@ -3,6 +3,8 @@ import Link from 'next/link';
 import MainContainer from '@components/layout/MainContainer';
 import SimpleArticleList from '@app/components/SimpleArticleList';
 
+export const dynamic='force-dynamic';
+
 export default function Home() {
   return (
     <MainContainer>
