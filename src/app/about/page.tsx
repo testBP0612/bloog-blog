@@ -1,11 +1,14 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import type { Metadata } from 'next';
 
 import MainContainer from '@components/layout/MainContainer';
 import Heading from '@components/UI/Heading';
 import skills from '@constants/skills';
 
-const logoSize = 60;
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'Web developer and love to write about web development, programming, and other tech-related stuff',
+};
 
 export default async function Page() {
   return (
@@ -22,8 +25,8 @@ export default async function Page() {
         <div className="text-justify">
           <p className="mb-4 text-lg leading-7 text-gray-600 dark:text-gray-300">
             Hi, there! I&apos;m
-            <b className="font-semibold"> 黃柏鈞 / Bojun Huang</b>, a web developer and I love to write about web
-            development, programming, and other tech-related stuff.
+            <b className="font-semibold"> 黃柏鈞 / Bloop (Bojun Huang)</b>, a web developer and I love to write about
+            web development, programming, and other tech-related stuff.
           </p>
           <p className="mb-4 text-lg leading-7 text-gray-600 dark:text-gray-300">
             I have been working as a web developer for over 5 years. I have experience in building web applications
