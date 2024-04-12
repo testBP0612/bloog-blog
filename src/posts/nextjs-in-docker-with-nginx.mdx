@@ -109,7 +109,6 @@ ENV PORT 8080
 
 接著在控制台輸入 `docker build -t (you_app_name) .` 就會執行寫好的 `Dockerfile` 打包專案，產生出 Image。
 
-![Untitled](Next%20js%20in%20Docker%20with%20Nginx%203d88df55b0164268b4eaabcb85ed2345/Untitled.png)
 ![svgOptimize](/images/blog/nextjs-in-docker-with-nginx/dockerImage.png)
 
 用這種方式產出來的 Image 只會包含 Nginx 及靜態資源的容量，從我使用同一個應用程式打包的結果來看，`mysite_nextjs` 是原始應用程式打包的大小，`blog` 是輸出靜態資源及 Nginx 打包的大小，可看到相差甚多。因此透過這個方式能讓我們能在最終部署時僅保留所需資源。
