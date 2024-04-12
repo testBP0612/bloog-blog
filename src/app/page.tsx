@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 import MainContainer from '@components/layout/MainContainer';
+import Heading from '@components/UI/Heading';
 import SimpleArticleList from '@app/components/SimpleArticleList';
 
 export const dynamic = 'force-dynamic';
@@ -9,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export default function Home() {
   return (
     <>
-      <div className="flex flex-col xl:flex-row justify-center items-center gap-8 py-10 px-5 md:px-0">
+      <div className="flex flex-col xl:flex-row justify-center items-center gap-8 py-8 md:py-12 px-5 md:px-0 mb-4">
         <div className="flex flex-col items-center space-y-4">
           <div className="space-y-2">
             <div className="w-52 sm:w-64 md:w-full md:max-w-sm xl:max-w-md mb-10 md:mb-20">
@@ -35,6 +36,9 @@ export default function Home() {
       </div>
       <MainContainer>
         <section className="w-full bg-cover bg-center">
+          <Heading level="h2" className="text-center">
+            Latest Articles
+          </Heading>
           <SimpleArticleList />
           <div className="flex justify-center mt-8">
             <Link
