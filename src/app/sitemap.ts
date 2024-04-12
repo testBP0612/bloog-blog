@@ -31,7 +31,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return {
       url,
       lastModified,
-			priority: 0.7,
     };
   });
 
@@ -39,18 +38,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${baseUrl}`,
       lastModified: new Date(),
-      priority: 1,
     },
     {
       url: `${baseUrl}/about`,
       lastModified: new Date(),
-      priority: 0.8,
     },
     {
       url: `${baseUrl}/blog`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.6,
     },
 		...postSitemap,
   ];

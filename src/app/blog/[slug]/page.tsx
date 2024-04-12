@@ -16,9 +16,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: frontMatter.title,
     description: frontMatter.description,
-    metadataBase: new URL("https://www.testbp.xyz"),
     openGraph: {
+      url: `https://www.testbp.xyz/blog/${slug}`,
       images: [frontMatter.thumbnailUrl],
+      type: 'article',
     },
     keywords: frontMatter.tags,
   };

@@ -10,9 +10,13 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.testbp.xyz"),
   title: {
     default: 'Bloop site',
     template: '%s | Bloop',
+  },
+  alternates: {
+    canonical: '/',
   },
   description: 'Welcome to Bloop personal blog - a space dedicated to the exploration and sharing of web development insights and experiences.',
 };
