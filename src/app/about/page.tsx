@@ -7,6 +7,9 @@ import skills from '@constants/skills';
 
 export const metadata: Metadata = {
   title: 'About',
+  alternates: {
+    canonical: '/about',
+  },
   description: 'Web developer and love to write about web development, programming, and other tech-related stuff',
 };
 

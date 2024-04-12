@@ -16,6 +16,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: frontMatter.title,
     description: frontMatter.description,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       url: `https://www.testbp.xyz/blog/${slug}`,
       images: [frontMatter.thumbnailUrl],

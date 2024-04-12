@@ -9,6 +9,9 @@ import SearchBar from '@app/blog/components/SearchBar';
 
 export const metadata: Metadata = {
   title: 'Blog',
+  alternates: {
+    canonical: '/blog',
+  },
   description:
     'Welcome to my blog where I share insights, tips, and in-depth tutorials on web development technologies and best practices. Dive into the world of coding with articles that cater to both beginners and seasoned developers alike.',
 };
