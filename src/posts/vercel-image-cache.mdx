@@ -122,6 +122,8 @@ Vercel 對於動態內容，如 Serverless Functions（包含 SSR）和 Edge Fun
 
 # 觀察本部落格上的快取行為
 
+![imageHeaders](/images/blog/vercel-image-cache/imageHeaders.png)
+
 因為這個部落格就是部署在 Vercel 上，所以以本部落格的靜態圖片檔案為例，透過開發者工具觀察結果，首先關注 Response：
 
 - `X-Vercel-Cache`：表示一個請求是否被 Vercel 的 CDN 快取。如果值為 `HIT`，則表示該請求已被快取；如果值為 `MISS`，則表示該請求未被快取。[https://vercel.com/docs/concepts/edge-network/headers#x-vercel-cache](https://vercel.com/docs/concepts/edge-network/headers#x-vercel-cache)
@@ -130,12 +132,6 @@ Vercel 對於動態內容，如 Serverless Functions（包含 SSR）和 Edge Fun
     - `public`：這表示響應可以被任何快取存儲。
     - `max-age=0`：這表示快取的內容應立即過期。在這之後，快取必須重新驗證內容的新鮮度。
     - `must-revalidate`：這表示一旦快取的內容過期（在這種情況下，由於 `max-age=0`，所以立即過期），快取必須向原始後端發送請求，以驗證該內容是否已被修改。
-
-如果清除快取重新載入則會看到 `ETag`
-
-再來關注 Request：
-
-`If-None-Match`：其值為先前後端提供的 `ETag` 值。如果資源未變更，後端會回應一個 `304` 狀態碼。
 
 ## 結果
 
