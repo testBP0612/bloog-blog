@@ -10,7 +10,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.testbp.xyz"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.testbp.xyz'),
   title: {
     default: 'Bloop site',
     template: '%s | Bloop',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
     types: {
-      'application/rss+xml': 'https://www.testbp.xyz/feed.xml',
+      'application/rss+xml': `${process.env.NEXT_PUBLIC_BASE_URL}/feed.xml`,
     }
   },
   description: 'Welcome to Bloop personal blog - a space dedicated to the exploration and sharing of web development insights and experiences.',

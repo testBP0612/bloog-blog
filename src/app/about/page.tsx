@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import type { Metadata } from 'next';
+import type { BreadcrumbList, WithContext } from 'schema-dts';
 
 import MainContainer from '@components/layout/MainContainer';
 import Heading from '@components/UI/Heading';
@@ -14,6 +15,25 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const breadcrumbList: WithContext<BreadcrumbList> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: process.env.NEXT_PUBLIC_BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'About',
+        item: `${process.env.NEXT_PUBLIC_BASE_URL}/about`,
+      },
+    ],
+  };
+
   return (
     <MainContainer>
       <Heading level="h1">About</Heading>
@@ -70,6 +90,7 @@ export default async function Page() {
         development, as well as marketing strategies. I have taught more than 30 classes, benefiting over 900 students
         in their pursuit of web technology expertise.
       </p>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />
     </MainContainer>
   );
 }

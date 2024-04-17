@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import type { BreadcrumbList, WithContext } from 'schema-dts';
 
 import MainContainer from '@components/layout/MainContainer';
 import Heading from '@components/UI/Heading';
@@ -23,6 +24,25 @@ export default async function Page({
 }) {
   const search = typeof searchParams.q === 'string' ? searchParams.q : undefined;
 
+  const breadcrumbList: WithContext<BreadcrumbList> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: process.env.NEXT_PUBLIC_BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: `${process.env.NEXT_PUBLIC_BASE_URL}/blog`,
+      },
+    ],
+  };
+
   return (
     <MainContainer>
       <div className="space-y-2 pb-8 md:space-y-5">
@@ -32,6 +52,7 @@ export default async function Page({
       <Suspense fallback={<Skeleton count={5} />}>
         <ArticleList search={search} />
       </Suspense>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />
     </MainContainer>
   );
 }

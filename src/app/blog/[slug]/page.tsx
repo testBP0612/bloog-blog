@@ -1,5 +1,6 @@
 import MainContainer from '@components/layout/MainContainer';
 import type { Metadata } from 'next';
+import type { Article as ArticleLd, BreadcrumbList, WithContext } from 'schema-dts';
 
 import Article from '@app/blog/[slug]/components/Article';
 import { getArticleBySlug } from '@lib/blog';
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       canonical: `/blog/${slug}`,
     },
     openGraph: {
-      url: `https://www.testbp.xyz/blog/${slug}`,
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${slug}`,
       images: [frontMatter.thumbnailUrl],
       type: 'article',
     },
@@ -28,12 +29,60 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default async function Page({ params }: { params: { slug: string } }) {
   const slug = params.slug;
+  const { data: frontMatter } = await getArticleBySlug(slug);
+
+  const articleJsonLd: WithContext<ArticleLd> = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: frontMatter.title,
+    image: frontMatter.thumbnailUrl,
+    datePublished: frontMatter.date,
+    dateModified: frontMatter.lastModified,
+    author: {
+      '@type': 'Person',
+      name: 'Bloop',
+      url: `${process.env.NEXT_PUBLIC_BASE_URL}/about`,
+    },
+  };
+
+  const breadcrumbList: WithContext<BreadcrumbList> = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: process.env.NEXT_PUBLIC_BASE_URL,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: `${process.env.NEXT_PUBLIC_BASE_URL}/blog`
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: frontMatter.title,
+        item: `${process.env.NEXT_PUBLIC_BASE_URL}/blog/${slug}`,
+      },
+    ],
+  };
 
   return (
     <MainContainer>
       <Article slug={slug} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
+      />
     </MainContainer>
   );
 }
