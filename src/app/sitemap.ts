@@ -2,27 +2,12 @@ import { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
 
-function getAllMdxFilePaths(directory: string): string[] {
-  const fileNames = fs.readdirSync(directory);
-  const filePaths = fileNames.map((fileName) => {
-    const filePath = path.join(directory, fileName);
-    const stat = fs.statSync(filePath);
-    if (stat.isDirectory()) {
-      return getAllMdxFilePaths(filePath);
-    } else {
-      return filePath;
-    }
-  });
-
-  return Array.prototype.concat(...filePaths);
-}
+import { articlesDirectory, getAllArticleFilePaths } from '@lib/blog';
 
 const baseUrl = 'https://www.testbp.xyz';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const blogDirectory = path.join(process.cwd(), 'src/posts');
-
-  const mdxFilePaths = getAllMdxFilePaths(blogDirectory);
+  const mdxFilePaths = getAllArticleFilePaths(articlesDirectory);
 
   const postSitemap = mdxFilePaths.map((filePath) => {
     const slug = path.basename(filePath, '.mdx');
@@ -48,6 +33,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'monthly',
     },
-		...postSitemap,
+    ...postSitemap,
   ];
 }

@@ -6,17 +6,32 @@ import readingTime, { type ReadTimeResults } from 'reading-time';
 import { type BlogArticle } from 'types/blog';
 import { BASE_API_URL } from '@constants/env';
 
-const articlesDirectory = path.join(process.cwd(), 'src/posts');
+export const articlesDirectory = path.join(process.cwd(), 'src/posts');
 
-export const getAllSlugs = (): string[] => fs.readdirSync(articlesDirectory);
+export function getAllArticleFilePaths(directory: string): string[] {
+  const fileNames = fs.readdirSync(directory);
+  const filePaths = fileNames.map((fileName) => {
+    const filePath = path.join(directory, fileName);
+    const stat = fs.statSync(filePath);
+    if (stat.isDirectory()) {
+      return getAllArticleFilePaths(filePath);
+    } else {
+      return filePath;
+    }
+  });
 
-export const getRawArticleBySlug = (slug: string): matter.GrayMatterFile<string> => {
+  return Array.prototype.concat(...filePaths);
+}
+
+export function getAllSlugs(): string[] { return fs.readdirSync(articlesDirectory); }
+
+export function getRawArticleBySlug (slug: string): matter.GrayMatterFile<string> {
   const fullPath = path.join(articlesDirectory, `${slug}.mdx`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
   return matter(fileContents);
 };
 
-export const getArticleBySlug = async (slug: string, fields: string[] = []): Promise<BlogArticle> => {
+export async function getArticleBySlugAndFields (slug: string, fields: string[] = []): Promise<BlogArticle> {
   const realSlug = slug.replace(/\.mdx$/, '');
   const { data, content } = getRawArticleBySlug(realSlug);
   const timeReading: ReadTimeResults = readingTime(content);
@@ -77,7 +92,7 @@ export async function getArtistList(search: string = '') {
   }
 }
 
-export async function getArtistBySlug(post: string) {
+export async function getArticleBySlug(post: string) {
   try {
     const response = await fetch(`${BASE_API_URL}/api/blog/slug?post=${post}`, {
       cache: 'no-store',

@@ -2,7 +2,7 @@ import MainContainer from '@components/layout/MainContainer';
 import type { Metadata } from 'next';
 
 import Article from '@app/blog/[slug]/components/Article';
-import { getArtistBySlug } from '@lib/blog';
+import { getArticleBySlug } from '@lib/blog';
 
 type PageProps = {
   params: { slug: string };
@@ -11,7 +11,7 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const slug = params.slug;
-  const { data: frontMatter } = await getArtistBySlug(slug);
+  const { data: frontMatter } = await getArticleBySlug(slug);
 
   return {
     title: frontMatter.title,

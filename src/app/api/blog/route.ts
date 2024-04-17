@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 
-import { getAllSlugs, getArticleBySlug } from '@lib/blog';
+import { getAllSlugs, getArticleBySlugAndFields } from '@lib/blog';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const articles = (
       await Promise.all(
         getAllSlugs().map(async (articleSlug) => {
-          return getArticleBySlug(articleSlug, fields);
+          return getArticleBySlugAndFields(articleSlug, fields);
         })
       )
     ).sort((article1, article2) => (article1.date > article2.date ? -1 : 1));

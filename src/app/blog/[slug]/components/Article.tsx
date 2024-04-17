@@ -4,7 +4,7 @@ import readingTime from 'reading-time';
 
 import MdxContent from '@app/blog/[slug]/components/MdxContent';
 import ArticleHeader from '@app/blog/[slug]/components/ArticleHeader';
-import { getArtistBySlug } from '@lib/blog';
+import { getArticleBySlug } from '@lib/blog';
 
 import type { ArticleFrontMatter } from 'types/blog';
 
@@ -13,7 +13,7 @@ interface ArticleProps {
 }
 
 export default async function Article({ slug }: ArticleProps) {
-  const { data: frontMatter, content } = await getArtistBySlug(slug);
+  const { data: frontMatter, content } = await getArticleBySlug(slug);
 
   const timeReading = readingTime(content);
   const serialized = await serialize(content, {
