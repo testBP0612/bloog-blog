@@ -17,6 +17,9 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: '/',
+    types: {
+      'application/rss+xml': 'https://www.testbp.xyz/feed.xml',
+    }
   },
   description: 'Welcome to Bloop personal blog - a space dedicated to the exploration and sharing of web development insights and experiences.',
 };
