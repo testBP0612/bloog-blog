@@ -1,0 +1,98 @@
+---
+title: Cursor —— 一個為 AI 而生的編輯器使用心得
+date: '2024-06-24'
+description: 探索如何使用 AI 工具來提升開發效率，特別是專為 AI 設計的編輯器 Cursor 及其改進版 Copilot++。本文分享親身體驗，詳述如何從 ChatGPT 到 Cursor，讓 AI 成為開發者的得力助手。
+thumbnailUrl: /images/blog/cursor-experience/banner.webp
+tags: ['AI', 'IDE']
+---
+
+## 前言
+自從 2022 年 OpenAI 推出 ChatGPT 後，我們似乎正式踏入了 AI 時代的新紀元。作為工程師，我也開始利用 AI 來輔助開發。不僅提高了工作效率，還能從 AI 生成的程式碼中學習到過去未曾接觸的知識。自從 Github Copilot 的付費版推出後，我便開始使用，深深體會到了 AI 帶來的便利。~~儼然從面相 Google 編程進化成面向 AI 編程。~~
+
+直到去年年底，我注意到了一款被社群熱烈推薦的編輯器 — Cursor。據說它是專為 AI 設計的，於是我也開始嘗試使用。經過幾個月的親身體驗，決定來做一些分享。
+
+## Cursor 是什麼
+> Build software faster in an editor designed for pair-programming with AI
+
+根據官方描述，Cursor 旨在提供更加專注於程式開發功能與體驗，它有幾個特點：
+
+- 能夠了解你的整個專案的程式碼並作為基礎來回答你關於程式碼的問題。
+- 將特定文件檔案作為參考來回答問題。
+- 在提問時啟用網路搜尋模式，使用網路上的最新資訊來回答問題。
+- 引用第三方庫的文件進行提問，甚至你想要使用自己寫的文件檔案當參考來進行提問也可以。
+
+當然這些只是基本功能，但對於三不五時就會將程式碼貼給 ChatGPT 詢問修改的我來說還挺實用的，因為都內建在編輯器裡面了。
+
+另外它還是一款建立在 VSCodium 上的編輯器。VSCodium 本身則是基於 VSCode 的開源版本，為開發者提供一個更為開放且乾淨的編輯器。
+
+VSCodium 跟 VSCode 都擁有：
+
+* 相似的介面
+* 相容的 Extensions
+* 相同的跨平台兼容
+
+唯一最大的不同在於 VS Codium 沒有被部分社群詬病的 [Telemetry 機制](https://code.visualstudio.com/docs/getstarted/telemetry)，也就是微軟內建的一些追蹤收集使用者資料的機制，這個特性對於重視隱私的使用者而言格外重要。
+
+這樣的設計使 Cursor 不僅繼承了 VSCode 豐富的功能與擴展性，同時也保留了對使用者隱私的尊重，官方寫道如果你開啟 Privacy Mode，Cursor 或任何第三方都不會儲存任何程式碼。因此，無論是介面操作、擴展兼容性還是跨平台使用，Cursor 都提供與 VSCode 相似的開發體驗。
+
+### Copilot++
+
+此外， Cursor 還打造了一種全新的助手——Copilot++，在原有 Copilot 基礎上的重大改進。以下內容是根據[官方網站描述](https://cursor.sh/cpp)所節錄。
+
+Copilot++ 旨在解決 Copilot 未能充分處理的問題：程式碼編輯。大多數開發工作實際上涉及對現有程式碼的重構，而不僅僅是撰寫全新的程式碼。Copilot++ 通過訓練模型識別小的差異序列，並在推理時考慮最近幾分鐘內所做的編輯，從而更精確地反映出工程師的意圖。
+
+甚至可以寫偽代碼（pseudocode），按 Tab 鍵後，Copilot++ 能夠將其完美轉化為運行中的程式碼。這點看起來甚至提供了前所未有的便利性。
+
+目前 Copilot++ 還處於早期版本，而且需要付費到 [Cursor pro](https://cursor.sh/pricing) 才能使用。不過付費版還提供了 GPT-4 以及 Claude Opus 的使用權限，本身就有付費使用 AI 服務的人可以考慮看看嘗試不同的選擇。
+
+我本來就有付費使用 Copilot，然後僅在 Cursor 中付費嘗試過 Copilot++ 一個月，在根據程式碼上下文，推斷意圖的輔助編程表現上「體感」優於原版 Copilot。不過因為也只付費過一個月，~~然後就為了圖片生成功能改付費 ChatGPT 了~~，因此也僅供參考。
+
+### 為 AI 而生的功能
+官方網站提供了一個[功能介紹的頁面](https://www.cursor.com/features)，但我想以親身體驗後的使用者的角度，分享幾個我在 Cursor 上比較喜歡和常用的功能。
+
+- 基本設定：編輯器右上角齒輪點開，可以設定回答的規則、隱私模式開關等基本設定。Models 內可以配置 OpenAI, Anthropic, Google AI, Azure 不同廠商的 API Key，並選擇作為回答的模型。
+
+![settings](/images/blog/cursor-experience/settings.png)
+
+
+- 多工的聊天介面：最基本的功能。按下 `⌘L` 會開啟聊天視窗。從介面上就可看出 Vscode Copilot 的聊天介面有所差距。
+
+![basic-chat](/images/blog/cursor-experience/basic-chat.png)
+
+- 一鍵插入程式碼對話：反白選取程式碼，按下 `Add to Chat`，Bang！程式碼跑到聊天介面中，可接著提問囉。~~省下複製貼上的工。~~
+
+![add-code-to-chat](/images/blog/cursor-experience/add-code-to-chat.png)
+
+- 基於不同的 context 提問：個人認為是相較 Copilot 的一大優勢，可以自己附上專案內與這段程式碼有關的檔案進行提問；提供第三方庫的網址作為參考提問；甚至可以基於不同分支進行提問。
+
+![ask-files](/images/blog/cursor-experience/ask-files.png)
+
+- 基於文件的提問：選擇後，AI 會去爬你所選擇的文件進行回答。例如最上面兩個文件是我自己新增的範例。
+
+![ask-docs](/images/blog/cursor-experience/ask-docs.png)
+
+新增文件的方法也很簡單，按下最下面的 Add new doc，然後輸入線上網址，然後再輸入 Name 按下 Confirm，這樣發問時就能選擇該文件了。
+
+![add-new-doc](/images/blog/cursor-experience/add-new-doc.png)
+
+- 在終端機提問：按下 `⌘K` 可以開啟 Cursor 內建的快速聊天小工具，可以請他直接無中生有一段程式碼，包含在終端機使用。有時候要下一些不常用的指令時，直接用自然語言提問請 AI 生成是很方便的。
+
+![terminal](/images/blog/cursor-experience/terminal.png)
+
+以上幾個是我高頻率使用到的功能，當然基本的程式碼修復跟生成就不多做展示了。其他還有針對整個專案進行掃描的提問、網路搜尋模式等，我使用起來效果都不如預期的好，可能是意圖不夠清晰，也可能是還沒有合適的使用場景吧。
+
+## 如何使用
+談談開發者最關心的問題：習慣了 VSCode，轉換成 Cursor 的成本會不會很高？正如開頭所說，Cursor 是基於 VSCodium 開發的。與 VSCode 相比，兩者不能說很像，而是非常像。不論是介面、快捷鍵、還是配色，幾乎都完全繼承了。
+
+根據我的使用經驗，我在 Mac 和 Windows 電腦上都先安裝了 VSCode 然後才安裝 Cursor。而如果你和我一樣平常就使用 VSCode，那就是四個字：一・鍵・整・合！只要下載並安裝好 Cursor，打開它並按照操作步驟走，它會自動導入你在 VSCode 的所有設定，包括插件和偏好設定等等。
+
+在安裝過程中，我幾乎沒有任何額外操作的印象，所有原先在 VSCode 上的設定都被順利搬到 Cursor 上了，絲滑的安裝體驗讓我感覺遷移成本幾乎為零。
+
+如果你之前沒有使用過 VSCode，那就當成第一次使用 VSCode 來使用 Cursor 吧。
+
+## 結論
+雖然 Cursor 還處於早期階段，但它的野心極為宏大。從其 Roadmap 中可以清楚看出，Cursor 計劃成為全球最高效的開發環境。這個目標將透過利用大型語言模型（LLMs）來實現，將為開發者帶來前所未有的便捷與創新功能。
+
+最後聊聊自己的使用心得，作為主力開發編輯器而言，它提供更易用的聊天介面，在操作上習慣後能提高與 AI 協作開發的速度，不論是快速插入程式碼還是根據文件提問都是高頻使用場景。它有的問題也是生成式 AI 的老問題，面對過於開放性的問題會有鬼打牆的症狀，相同的問題拿去問付費版的 ChatGPT 都有得到更明確的結果。在輔助編程上有付費跟沒付費的體感也差很多，不得不說 Copilot++ 的生成能力確實優秀，也許等編輯器本身的功能再更齊全點，再花這筆錢才會比較划算？
+
+總結來說，如果本身已經習慣 AI 輔助開發，使用的編輯器也是 VSCode 的話，可以先用它提供的免費方案嘗試看看，畢竟轉移的成本很低，體驗上也跟 VSCode 接近。個人的看法是在這個時代生存的工程師，持續累積個人實力，駕馭各種 AI 工具才能立於不敗之地。
