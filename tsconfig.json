@@ -19,7 +19,7 @@
         "name": "next"
       }
     ],
-    "typeRoots": ["./types"],
+    "typeRoots": ["./src/types", "node_modules/@types"],
     "paths": {
       "@app/*": ["./app/*"],
       "@api/*": ["./api/*"],
@@ -28,9 +28,10 @@
       "@lib/*": ["./lib/*"],
       "@hooks/*": ["./hooks/*"],
       "@styles/*": ["./styles/*"],
-      "@types/*": ["./types/*"],
+      "@types/*": ["./types/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "types": ["jest"]
 }
