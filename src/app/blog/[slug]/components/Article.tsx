@@ -19,7 +19,6 @@ export default async function Article({ slug }: ArticleProps) {
   const serialized = await serialize(content, {
     parseFrontmatter: true,
     mdxOptions: {
-      remarkPlugins: [],
       rehypePlugins: [[rehypePrism, { showLineNumbers: true }]],
     },
   });

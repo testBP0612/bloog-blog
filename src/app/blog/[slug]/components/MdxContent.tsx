@@ -1,6 +1,7 @@
 'use client'; // This is required!
 
-import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote';
+import { type MDXRemoteSerializeResult } from 'next-mdx-remote';
+import dynamic from 'next/dynamic';
 
 import "@styles/theme/prism-puls.css"
 import "@styles/theme/prism-darcula.css"
@@ -8,6 +9,8 @@ import "@styles/theme/prism-darcula.css"
 type MdxContentProps = {
   source: MDXRemoteSerializeResult;
 };
+
+const MDXRemote = dynamic(() => import('next-mdx-remote').then((mod) => mod.MDXRemote), { ssr: false });
 
 const MdxComponents = {
   Card: (props: React.HTMLProps<HTMLDivElement>) => (
