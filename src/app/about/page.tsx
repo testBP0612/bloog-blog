@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/about',
   },
-  description: 'Web developer and love to write about web development, programming, and other tech-related stuff',
+  description: 'Web 開發人員，喜歡撰寫有關 Web 開發、程式設計和其他技術相關內容的文章。',
 };
 
 export default async function Page() {

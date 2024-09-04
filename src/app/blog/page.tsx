@@ -13,8 +13,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/blog',
   },
-  description:
-    'Welcome to my blog where I share insights, tips, and in-depth tutorials on web development technologies and best practices. Dive into the world of coding with articles that cater to both beginners and seasoned developers alike.',
+  description: '這裡分享有關 Web 開發技術和最佳實踐的見解、技巧文章。適合初學者和經驗豐富的開發人員閱讀。',
 };
 
 export default async function Page({

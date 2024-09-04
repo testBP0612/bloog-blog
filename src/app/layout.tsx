@@ -22,7 +22,7 @@ export const metadata: Metadata = {
       'application/rss+xml': `${process.env.NEXT_PUBLIC_BASE_URL}/feed.xml`,
     }
   },
-  description: 'Welcome to Bloop personal blog - a space dedicated to the exploration and sharing of web development insights and experiences.',
+  description: '歡迎來到 Bloop 個人部落格 - 一個致力於探索和分享 Web 開發見解和經驗的空間。',
 };
 
 const websiteLd: WithContext<WebSite> = {
