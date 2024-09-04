@@ -152,6 +152,9 @@ const config: Config = {
             hr: {
               borderColor: colors.quaternary,
             },
+            p: {
+              lineHeight: '1.6',
+            }
           },
         },
         dark: {

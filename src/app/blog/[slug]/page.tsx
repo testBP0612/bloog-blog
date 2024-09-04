@@ -38,7 +38,7 @@ export default async function Page({ params }: { params: { slug: string } }) {
     '@type': 'Article',
     headline: frontMatter.title,
     image: frontMatter.thumbnailUrl,
-    datePublished: frontMatter.date,
+    datePublished: new Date(frontMatter.date).toISOString(),
     dateModified: frontMatter.lastModified,
     author: {
       '@type': 'Person',
