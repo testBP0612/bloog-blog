@@ -44,15 +44,17 @@ export default async function Page({
   };
 
   return (
-    <MainContainer>
-      <div className="space-y-2 pb-8 md:space-y-5">
-        <Heading level="h1">Blog</Heading>
-        <SearchBar />
-      </div>
-      <Suspense fallback={<Skeleton count={5} />}>
-        <ArticleList search={search} />
-      </Suspense>
+    <>
+      <MainContainer>
+        <div className="space-y-2 pb-8 md:space-y-5">
+          <Heading level="h1">Blog</Heading>
+          <SearchBar />
+        </div>
+        <Suspense fallback={<Skeleton count={5} />}>
+          <ArticleList search={search} />
+        </Suspense>
+      </MainContainer>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />
-    </MainContainer>
+    </>
   );
 }
