@@ -3,21 +3,24 @@ title: 讓手機也能連線 Next.js Nx Monorepo 測試服務
 date: '2025-05-08' 
 description: 分享如何在 Windows 10 + WSL Ubuntu 環境中，透過 Windows portproxy 設定，讓同一 Wi‑Fi 下的手機直接訪問 Nx monorepo 的 Next.js 開發伺服器。
 thumbnailUrl: /images/blog/mobile-accessible-nextjs-nx/banner.webp
-tags: ['Next.js', 'Nx', 'WSL']
+tags: ['nextjs', 'Nx', 'WSL']
 ---
 
 ## 前言
 ### 讓手機也能連線 Next.js Nx Monorepo 測試服務
 在 Windows 10 + WSL Ubuntu 的開發環境裡，我們的 Nx monorepo Next.js 專案預設只能在電腦本機瀏覽。但後來在測試行動版畫面時，才發現手機無法直接連到開發伺服器，只能透過電腦確認。為了省去額外的 VPN 或反向代理設定，我決定研究怎麼讓手機在同一 Wi‑Fi 下，也能打開開發站台。
+
 起初，我以為只要在 `project.json` 的 serve 設定加上 `hostname: "0.0.0.0"`，甚至嘗試額外加 `host: "0.0.0.0"`，重啟後卻還是只能本機連線。後來試過學 npm 的命令列 `npm run dev --host 0.0.0.0`，才發現 Nx CLI 根本不支援這參數。
+
 轉折點出現在我跑去 WSL 裡使用 `ip addr show`，赫然發現 WSL 的 IP（如 172.28.162.62）和 Windows 主機的 IP（如 192.168.1.102）並不相同。打開 `http://172.28.162.62:4200` 確實能在電腦上瀏覽，但手機還是連不到。
+
 我在網路上搜尋「WSL2 port forwarding Next.js」，並參考了幾篇 StackOverflow 的解答，才了解到 WSL2 預設有網路隔離，需要在 Windows 端設定 portproxy。以下就是我最終的解法：
 
 ## 具體操作步驟
 
 1. **確認 project.json**（若已設定可跳過）
 
-   ```jsonc
+   ```json
    {
      "serve": {
        "options": {
@@ -94,6 +97,6 @@ tags: ['Next.js', 'Nx', 'WSL']
 
 ## 結論
 
-這套設定其實就是讓 Windows 監聽局域網 4200 埠，並把流量轉給 WSL 的 Next.js 服務，相比 npm 開發可以直接下 --host 就能讓手機連線，在 wsl 環境下又多了段轉發的設定，不過不需要額外搭建代理或改動其他埠號。對開發測試的影響非常小，只帶來一點點網路轉發延遲；而且規則會留存到系統重啟，若要還原只要刪除 portproxy 即可。
+這套設定其實就是讓 Windows 監聽局域網 4200 埠，並把流量轉給 WSL 的 Next.js 服務。相比一般開發環境可以直接下 `--host` 就能讓手機連線，在 wsl 環境下又多了段轉發的設定，不過不需要額外搭建代理或改動其他埠號，對開發測試的影響非常小，只帶來一點點網路轉發延遲；而且規則會留存到系統重啟，若要還原只要刪除 portproxy 即可。
 
 這樣一來，同一 Wi‑Fi 下的手機、平板就能直接打開開發版，隨時檢查行動端效果，省時又方便。
