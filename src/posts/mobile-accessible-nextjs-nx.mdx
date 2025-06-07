@@ -6,8 +6,8 @@ thumbnailUrl: /images/blog/mobile-accessible-nextjs-nx/banner.webp
 tags: ['nextjs', 'Nx', 'WSL']
 ---
 
-## 前言
-### 讓手機也能連線 Next.js Nx Monorepo 測試服務
+# 前言
+## 讓手機也能連線 Next.js Nx Monorepo 測試服務
 在 Windows 10 + WSL Ubuntu 的開發環境裡，我們的 Nx monorepo Next.js 專案預設只能在電腦本機瀏覽。但後來在測試行動版畫面時，才發現手機無法直接連到開發伺服器，只能透過電腦確認。為了省去額外的 VPN 或反向代理設定，我決定研究怎麼讓手機在同一 Wi‑Fi 下，也能打開開發站台。
 
 起初，我以為只要在 `project.json` 的 serve 設定加上 `hostname: "0.0.0.0"`，甚至嘗試額外加 `host: "0.0.0.0"`，重啟後卻還是只能本機連線。後來試過學 npm 的命令列 `npm run dev --host 0.0.0.0`，才發現 Nx CLI 根本不支援這參數。
