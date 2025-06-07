@@ -1,0 +1,173 @@
+---
+title: Tailwind CSS v4 —— 更貼近 CSS 原生的新時代
+date: '2025-06-07'
+description: 本文分享我在公司專案與兩個 side project 中實際使用 Tailwind CSS v4 的體驗與學習，深入探討 CSS-first 配置、Cascade Layers 與主題變數系統等新特性。
+thumbnailUrl: /images/blog/tailwindcss4-review/banner.webp
+tags: ['TailwindCSS v4', 'CSS', '前端工具']
+---
+
+# 為什麼選擇 Tailwind CSS v4？
+
+作為一個前端工程師，我一直很喜歡 Tailwind CSS 提供的快速開發體驗。幾個月前 Tailwind 推出了 v4 版本，加入了許多新特性以及明顯的效能提升，大幅簡化了安裝和初始設定流程。
+
+例如，不再需要 `@tailwind base; @tailwind components; @tailwind utilities;` 這些指令。同時，內建了對 `@import` 規則的處理以及現代語法轉換，減少了對 `postcss-import` 和 `autoprefixer` 等外部 PostCSS 外掛的依賴 。對於 Vite 使用者，官方更推薦使用新的 `@tailwindcss/vite`，以獲得最佳效能和最少設定。   
+
+目前我已經將手邊一個公司專案成功升級到 Tailwind CSS v4，也在兩個小型專案中實踐過，累積了一些使用心得與感想，希望這篇文章能提供你一些參考。
+
+老實說，個人認為像 Tailwind CSS 這樣不與 JavaScript 強烈綁定，回歸貼近**原生 CSS**開發體驗的設計，可能會逐漸成為未來前端開發的主流。尤其是 CSS 功能越發強大的現今。
+
+## 核心變革：CSS 優先
+
+這次 Tailwind v4 最大的變動，就是引入了「CSS-first」的配置理念。過去我們主要使用 `tailwind.config.js` 進行設定，現在 v4 不再自動監測它，且建議你將大部分設定直接搬進 CSS 中。
+
+> 儘管[仍然可以](https://tailwindcss.com/docs/upgrade-guide#using-a-javascript-config-file)透過 `@config` 指令被載入以實現向後相容或處理複雜的 JavaScript 邏輯。但核心趨勢是將設定移至主要的 CSS 檔案中。
+
+### 從 JS 到 CSS 的轉變
+
+過去在 Tailwind CSS v3 版本，你可能需要在專案根目錄的 `tailwind.config.js` 中進行所有的樣式設定，包括顏色、間距和字型等。
+
+例如過去你可能這樣設定自訂顏色：
+
+```javascript
+theme: { extend: { colors: { brand: '#FF0000' } } }
+```
+
+現在 v4 中，設定方式更直接且貼近 CSS 本身，透過新的 `@theme` 指令，就能直接在 CSS 中定義這些設定：
+
+```css
+@theme {
+  --color-brand: #FF0000;
+  --font-display: "Inter", sans-serif;
+  --spacing-large: 4rem;
+}
+```
+
+### Theme Variable 命名空間
+
+Tailwind CSS v4 將[主題變數](https://tailwindcss.com/docs/theme#theme-variable-namespaces)自動歸類於不同的命名空間，不同命名空間會生成對應不同類型的 utility class，**像是**：
+
+| 命名             | 對應 utility class 範例          |
+| ---------------- | ---------------------------- |
+| `--color-*`      | `bg-red-500`, `text-sky-300` |
+| `--font-*`       | `font-sans`                  |
+| `--text-*`       | `text-xl`                    |
+| `--spacing-*`    | `p-4`, `m-2`, `gap-4`        |
+| `--shadow-*`     | `shadow-md`                  |
+
+
+這代表只要你在 CSS 中定義了對應的變數，Tailwind 就會自動產出對應的 utility class。例如：
+
+```css
+@theme {
+  --font-handwriting: 'Great Vibes', cursive;
+  --color-lagoon: oklch(0.72 0.11 221.19);
+}
+```
+
+就可以在 HTML 使用：
+
+```html
+<p class="font-handwriting text-lagoon">這段文字擁有自訂樣式</p>
+```
+
+你甚至可以完全覆蓋或初始化預設主題：
+
+```css
+@theme {
+  --color-*: initial;
+  --color-brand: #FF6347;
+}
+```
+
+這樣所有預設顏色類別都會消失，僅保留你自定義的變數。
+
+這種設計不只彈性高，更讓 Tailwind 的樣式配置變得模組化且明確，使用起來也便利性大增，如常用的 `color` 跟 `spacing`，只需定義一組即可享有多組變數的效果，大大減少程式碼維護量。
+
+### 為何要改為 CSS-first？
+
+這種轉變的好處之一，是讓專案配置更加直觀的允許開發者直接在 CSS 檔案中進行大部分配置，也更貼近標準的 CSS 工作流程。此外，透過這種方式定義的變數本身就是 CSS 原生變數，可以更容易地被自訂樣式或 JavaScript 存取與使用。
+
+而且，由於許多 IDE 和編輯器本來就支援 CSS 的顏色預覽和自動完成，這種設定方式能更容易融入開發環境，減少學習曲線和出錯機率。
+
+### 搭配新指令更靈活
+
+除了 `@theme` 之外，v4 還引入了其他新指令，像是 `@plugin` 和 `@custom-variant`。例如，你可以這樣在 CSS 中直接載入官方外掛：
+
+```css
+@plugin "@tailwindcss/typography";
+```
+
+如果你想啟用 class 型深色模式，也可以透過 CSS 直接定義：
+
+```css
+@custom-variant dark (&:where(.dark, .dark *));
+```
+
+這些指令進一步將設定的能力集中在 CSS 中，避免了過去在 JavaScript 設定檔和 CSS 間來回跳轉的麻煩。
+
+## 全新引擎帶來超快建置速度
+
+v4 版本引入了名為 Tailwind Oxide 的新引擎，根據[官方自己實測](https://tailwindcss.com/blog/tailwindcss-v4-alpha#a-new-engine-built-for-speed)建置效能比 v3 快了非常多。
+
+* 完整建置時間：從 300\~400 ms 降低到約 100 ms。
+* 增量建置（無新增 CSS）：從數十毫秒縮短到微秒級。
+
+這對於大型專案尤其有幫助，大幅提升了開發體驗。
+
+## 更好的現代 CSS 支援
+
+Tailwind CSS v4 明顯地朝著更緊密地整合和利用現代網頁標準的方向發展，大幅整合了現代 CSS 功能，例如：
+
+* **容器查詢 (Container Queries)**：元件可以依據自己的容器大小調整，而非整個頁面大小。
+* **color-mix() 函數**：輕鬆調整顏色混合和透明度。
+* **原生串聯層 (Native Cascade Layers)**：讓樣式的覆蓋順序更清晰可控。
+
+### Cascade Layers 帶來的優勢
+
+Cascade Layers 是 CSS 中的一種新特性，可以將樣式規則分成不同的層次，就像我們熟悉的圖層一樣層層堆疊的概念，每個圖層互不影響，但每個圖層之間有優先順序，越後面的圖層會蓋過前面的。
+
+Tailwind CSS v4 將樣式依序分成四個層級：`theme`、`base`、`components`、`utilities`。你可以輕鬆的在對應層級定義需要的樣式後直接使用它。
+
+* `theme` 層放置靜態的變數，例如字型或顏色。是這次 v4 改版新增加的層級。
+* `base` 層放置基本的選擇器樣式，例如 `h1`。
+* `components` 層放置可重複使用的元件樣式，像是按鈕、卡片等。
+* `utilities` 層則是工具類別，像是 `text-center`、`p-4` 等 Tailwind 的預設類別。
+
+因為 Tailwind CSS 預設將 `utilities` 放在最後一層，所以若你在 `components` 中定義了一個元件，之後希望稍微調整樣式，只要在 HTML 的 className 中直接加上對應的 utility 類別，就能輕鬆覆蓋原有元件的樣式。個人覺得這種方式真的超方便的，尤其是在需要微調樣式的時候。
+
+例如：
+
+```css
+@layer components {
+  .btn-primary {
+    background-color: var(--color-brand);
+    padding: 1rem;
+  }
+}
+```
+
+當你想要在 HTML 中調整這個按鈕的 `padding`，只需寫上 Tailwind 樣式，`components` 層級的樣式就會被 `utilities` 層級的樣式覆蓋過去：
+```jsx
+<button class="btn-primary p-2">更小的按鈕</button>
+```
+
+## 使用新版的考量
+
+話說回來，任何重大版本升級的實際成本與開發體驗都會因專案的具體情況而異，Tailwind CSS v4 也不例外。以下幾個問題可能是阻礙升級的最大原因，如果有符合的話建議謹慎評估：
+
+* 專案必須支援**舊版瀏覽器**，這是 v4 目前的主要限制。
+* 專案高度依賴尚未更新以支援 v4 的**第三方外掛**，許多外掛可能跟 `tailwind.config.js` 存在高度的整合。
+* 現有專案有大量**複雜的 JS 設定**或 `@apply` 用法，遷移成本高昂。
+
+升級也是不可避免地會遇到一些[重大變更](https://tailwindcss.com/docs/upgrade-guide#removed-deprecated-utilities)。包括移除已棄用的類別、重新命名部分類別以提高清晰度和一致性，以及調整某些類別的預設行為，例如：
+
+* 行為變更：`.ring` → `.ring-1` 預設寬度從 3px 變為 1px，若要維持 v3 的外觀，應將其替換為 `ring-3`。
+* 重新命名：`.blur` → `.blur-sm`。
+
+## 結論
+
+Tailwind CSS v4 帶來的變化確實值得一試，可以感受到這是一次雄心勃勃的更新，它帶來了顯著的效能提升、與現代 CSS 標準的深度整合、強大的新功能以及更簡化的新專案設定流程。
+
+如果是新專案立即就能享受顯著的效能提升和更好的開發體驗。但如果你的專案需要相容舊版瀏覽器或有大量複雜自訂設定，可以考慮逐步升級或繼續觀望後續版本的穩定性。
+
+希望這篇心得能幫助你更了解 Tailwind CSS v4！更多資訊可以參考[官方部落格指南](https://tailwindcss.com/blog/tailwindcss-v4)。
