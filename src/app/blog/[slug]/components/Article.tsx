@@ -1,5 +1,3 @@
-import { serialize } from 'next-mdx-remote/serialize';
-import rehypePrism from 'rehype-prism-plus';
 import readingTime from 'reading-time';
 
 import MdxContent from '@app/blog/[slug]/components/MdxContent';
@@ -16,18 +14,12 @@ export default async function Article({ slug }: ArticleProps) {
   const { data: frontMatter, content } = await getArticleBySlug(slug);
 
   const timeReading = readingTime(content);
-  const serialized = await serialize(content, {
-    parseFrontmatter: true,
-    mdxOptions: {
-      rehypePlugins: [[rehypePrism, { showLineNumbers: true }]],
-    },
-  });
 
   return (
     <>
       <ArticleHeader frontMatter={frontMatter as ArticleFrontMatter} timeReading={timeReading} />
       <article className="prose md:prose-lg lg:prose-xl prose-sm dark:prose-dark mx-auto max-w-none">
-        <MdxContent source={serialized} />
+        <MdxContent source={content} />
       </article>
     </>
   );
