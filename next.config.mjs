@@ -1,4 +1,3 @@
-import rehypeHighlight from 'rehype-highlight';
 import rehypeStringify from 'rehype-stringify';
 import createMDX from '@next/mdx';
 
@@ -6,7 +5,7 @@ import createMDX from '@next/mdx';
 const mdxConfig = {
   extension: /\.mdx?$/,
   remarkPlugins: [],
-  rehypePlugins: [rehypeHighlight, rehypeStringify],
+  rehypePlugins: [rehypeStringify],
   providerImportSource: '@mdx-js/react',
 };
 
