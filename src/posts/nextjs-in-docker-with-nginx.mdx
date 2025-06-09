@@ -14,14 +14,11 @@ tags: ['docker']
 
 主要流程是使用 Next.js 提供的 `next export` 將應用程式輸出為靜態 HTML， 然後放入 Nginx 指定的路徑就搞定了。
 
-<aside>
-💡 `next export` 輸出的 HTML 是根據 `getStaticProps` 和 `getStaticPaths` 將 `/page` 路徑下的每個頁面生成一個 HTML 文件（包含 dynamic routes）。如果應用程式中有使用到 `fallback: true` 或是 `getServerSideProps` 的 SSR 頁面將無法使用這個方法打包。更多資訊請查閱[官方文件](https://nextjs.org/docs/advanced-features/static-html-export)。如果想知道如何打包 SSR 頁面可以往下繼續閱讀。
-
-</aside>
+> `next export` 輸出的 HTML 是根據 `getStaticProps` 和 `getStaticPaths` 將 `/page` 路徑下的每個頁面生成一個 HTML 文件（包含 dynamic routes）。如果應用程式中有使用到 `fallback: true` 或是 `getServerSideProps` 的 SSR 頁面將無法使用這個方法打包。更多資訊請查閱[官方文件](https://nextjs.org/docs/advanced-features/static-html-export)。如果想知道如何打包 SSR 頁面可以往下繼續閱讀。
 
 首先先準備好 Next.js 應用程式，在根目錄新增 `.dockerignore` 檔案，這樣使用 `ADD` 或 `COPY` 指令時，會自動排除 `.dockerignore` 內符合名稱的檔案或路徑，讓一些沒必要或敏感的檔案不會在部署階段被打包進去。寫入以下內容：
 
-```docker
+```powershell
 .dockerignore
 .next/
 .git
@@ -34,7 +31,7 @@ README.md
 
 一樣在根目錄新增名為 `Dockerfile` 檔案，第一個階段創造一個名為 `deps` 的工作階段，透過 Node.js 安裝應用程式所需要的依賴項。寫入以下內容：
 
-```docker
+```dockerfile
 FROM node:alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -48,10 +45,7 @@ RUN npm ci
 - `COPY package*.json ./` 將本地目錄的 package 開頭 .json 結尾的檔案複製到 Container 內，這邊的目的是要複製 package.json 及 package-lock.json 兩個檔案。
 `RUN npm CI`  安裝 package 文件內的依賴項目。只有在第一次 build 的時候會花比較長的時間安裝，之後再次進行 build 時會啟用 Docker 的 cache 機制，利用已經存在的緩存減少安裝時間，除非 package 文件內有異動。
 
-<aside>
-💡 在 `docker build` 指令的最後加上 `--no-cache` 代表這次的 build 不會產生緩存，那在每次的 build 都會重新安裝所需的依賴項。
-
-</aside>
+> 在 `docker build` 指令的最後加上 `--no-cache` 代表這次的 build 不會產生緩存，那在每次的 build 都會重新安裝所需的依賴項。
 
 現在我們有了所需的依賴項目，再來將應用程式的原始碼放進 Image 以便接下來進行建構所需的靜態檔案。繼續寫入以下內容：
 
@@ -115,10 +109,7 @@ ENV PORT 8080
 
 成功輸出 Image 後再來 run 看看有沒有問題。在控制台輸入 `docker run -it -dp 8080:80 blog:latest` 啟動 Container，打開瀏覽器輸入網址 [localhost:8080](http://localhost:8080) 查看。如果一切順利，Next.js 輸出的靜態檔案就可以成功在 Nginx 上執行了。
 
-<aside>
-💡 Nginx 預設的 port 號是 80，我設定的 port 號是 8080，用 `-dp 8080:80` 來啟動 Container（-d 背景執行，-p 映射 port 號）後，就能在 [localhost:8080](http://localhost:8080) 看到結果。
-
-</aside>
+> Nginx 預設的 port 號是 80，我設定的 port 號是 8080，用 `-dp 8080:80` 來啟動 Container（-d 背景執行，-p 映射 port 號）後，就能在 [localhost:8080](http://localhost:8080) 看到結果。
 
 ## 使用 Docker compose 將 Server-Side-Rendering（*SSR*）頁面放上 Nginx
 
@@ -154,7 +145,7 @@ proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=MYCACHE:10m inactive=1d u
 
 為了運行 SSR 網站，還要運行 Node.js 的 Container 再將它設定成請求上游（upstream），作為讓 Nginx 請求的後端伺服器以得到需要的資源。然後告訴 Nginx 需要快取的檔案是執行 `npm run build` 所生成在 `next/static` 目錄底下的靜態檔案。整份 `default.conf` 文件看起來大概像這樣：
 
-```docker
+```nginx
 proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=MYCACHE:10m inactive=1d use_temp_path=off;
 
 upstream app_upstream {
@@ -269,10 +260,7 @@ Container Name 可以隨意更動，但是在我們的範例中，`nginx/default
 
 現在可以在瀏覽器輸入 `[http://localhost:8080](http://localhost:8080)` 並查看結果，SSR 頁面也能放上 Nginx 執行了！
 
-<aside>
-💡 因為我們沒有在 YMAL 檔案中指定 Image，所以要重新 build 並執行可以下這個指令： `docker-compose up --build`
-
-</aside>
+> 因為我們沒有在 YMAL 檔案中指定 Image，所以要重新 build 並執行可以下這個指令： `docker-compose up --build`
 
 ## 結語
 

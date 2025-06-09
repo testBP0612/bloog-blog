@@ -2,8 +2,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@plugin '@tailwindcss/typography';
-
 html {
   background-size: 100%;
 	background-repeat: repeat;
@@ -131,33 +129,14 @@ html.light {
     --tw-prose-td-borders: var(--color-tertiary-300);
   }
 
-  /* 程式碼區塊樣式 - 白天模式 */
+  /* 程式碼區塊樣式 */
   .prose pre {
-    background-color: #f6f8fa;
-    border: 1px solid #d1d9e0;
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin: 1.5rem 0;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0;
+    margin: 0;
     overflow-x: auto;
     position: relative;
-  }
-
-  .prose pre code {
-    background-color: transparent;
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-    font-size: 0.875rem;
-    line-height: 1.6;
-    border: none;
-    font-weight: normal;
-  }
-
-  /* 程式碼區塊樣式 - 深色模式 */
-  .dark .prose pre {
-    background-color: var(--color-dark-text-800);
-    border-color: var(--color-dark-text-600);
-    color: var(--color-light-text-100);
   }
 
   /* Inline code 樣式 - 白天模式 */
@@ -182,11 +161,6 @@ html.light {
   .prose code:not(pre code)::before,
   .prose code:not(pre code)::after {
     content: '';
-  }
-
-  /* 段落行高 */
-  .prose :where(p):not(:where([class~="not-prose"] *)) {
-    line-height: 1.5;
   }
 
   /* 程式碼複製按鈕樣式 */
@@ -238,13 +212,4 @@ html.light {
   .copy-button.copied::after {
     content: ' ✓';
   }
-
-	/* 修復表格第一列的 padding */
-	.prose thead th:first-child {
-		padding-inline-start: 1rem;
-	}
-
-	.prose tbody td:first-child {
-		padding-inline-start: 1rem;
-	}
 }

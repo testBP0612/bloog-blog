@@ -6,7 +6,7 @@ import { containerClassName } from '@components/layout/MainContainer';
 export default function Footer() {
   return (
     <footer className={containerClassName}>
-      <div className="grid grid-cols-2 gap-y-4 py-10 md:py-16 md:grid-cols-4 md:gap-0">
+      <div className="grid grid-cols-2 gap-y-4 py-6 md:py-12 md:grid-cols-4 md:gap-0 border-t border-gray-200 dark:border-gray-700">
         <div className="col-span-2 text-sm text-gray-500 dark:text-gray-300 m-auto md:m-0">
           <span className="text-base font-semibold leading-2 tracking-tight text-gray-900 dark:text-gray-100 md:leading-4 mb-1 md:mb-2 block">
             Bojun Huang
