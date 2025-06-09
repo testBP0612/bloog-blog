@@ -9,22 +9,22 @@ import Footer from '@components/layout/Footer';
 
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.testbp.xyz'),
   title: {
-    default: 'Bloop\'s Site',
+    default: "Bloop's Site",
     template: '%s | Bloop',
   },
   alternates: {
     canonical: '/',
     types: {
       'application/rss+xml': `${process.env.NEXT_PUBLIC_BASE_URL}/feed.xml`,
-    }
+    },
   },
   openGraph: {
-    siteName: 'Bloop\'s Site',
+    siteName: "Bloop's Site",
     images: [
       {
         url: '/images/photo.svg',
@@ -43,10 +43,10 @@ export const metadata: Metadata = {
 };
 
 const websiteLd: WithContext<WebSite> = {
-	'@context': 'https://schema.org',
-	'@type': 'WebSite',
-	name: "Bloop's Site",
-	url: 'https://www.testbp.xyz',
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: "Bloop's Site",
+  url: 'https://www.testbp.xyz',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
