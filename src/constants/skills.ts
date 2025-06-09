@@ -1,7 +1,7 @@
 const skills = [
   {
 		name: 'Frontend',
-    type: ['JavaScript', 'TypeScript', 'React', 'Next.js', 'Redux-toolkit', 'Jest'],
+    type: ['JavaScript (TypeScript)', 'React, Vue', 'Next.js', 'Tailwind CSS', 'Jest, Vitest'],
   },
 	{
 		name: 'Backend',

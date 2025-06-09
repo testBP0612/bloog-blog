@@ -39,27 +39,26 @@ export default async function Page() {
       <Heading level="h1">About</Heading>
       <div className="flex gap-8 flex-col xl:flex-row mb-10 md:mb-14">
         <Image
-          className="rounded-full self-center"
+          className="rounded-full"
           src="/images/about/personal.jpg"
           width={300}
           height={300}
           alt="personal"
+          placeholder="blur"
+          blurDataURL="data:image/webp;base64,UklGRuYGAABXRUJQVlA4WAoAAAAgAAAANgMANgMASUNDUMgBAAAAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADZWUDgg+AQAALCUAJ0BKjcDNwM+7Xa4VqmnJSOgCAEwHYlpbuF3YRtACewD32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk5D32ych77ZOQ99snIe+2TkPfbJyHvtk4UAA/v9yQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
         />
         <div className="text-justify">
           <p className="mb-4 text-lg leading-7 text-gray-600 dark:text-gray-300">
             Hi, there! I&apos;m
-            <b className="font-semibold"> 黃柏鈞 / Bloop (Bojun Huang)</b>, a web developer and I love to write about
-            web development, programming, and other tech-related stuff.
+            <b className="font-semibold"> 黃柏鈞 / Bloop (Bojun Huang)</b>,
+            是一名前端工程師。平常喜歡寫些關於網頁開發、程式技術與數位工具應用的文章。
           </p>
           <p className="mb-4 text-lg leading-7 text-gray-600 dark:text-gray-300">
-            I have been working as a web developer for over 5 years. I have experience in building web applications
-            using modern technologies such as React, Next.js, and Typescript. My background includes a significant stint
-            in project management within a startup environment, where I led teams to turn ideas into successful
-            projects.
+            我從事網頁開發工作已超過六年，擅長使用現代前端技術如 React、Next.js、Vue.js、TypeScript
+            來打造網頁。我也曾在新創公司擔任專案經理，帶領團隊將想法實現為具體產品。
           </p>
           <p className="mb-4 text-lg leading-7 text-gray-600 dark:text-gray-300">
-            This site is my personal blog, where I share my thoughts and experiences. if you have any questions or
-            suggestions, feel free to contact me.
+            這個網站是我個人的技術部落格，主要用來分享學習心得與實務經驗。如果你對內容有任何問題或建議，歡迎隨時聯絡我！
           </p>
         </div>
       </div>
@@ -82,13 +81,13 @@ export default async function Page() {
         ))}
       </div>
       <Heading level="h2" className="mb-2">
-        Teaching Experience
+        教學經歷
       </Heading>
       <p className="mb-4 text-lg leading-7 text-gray-600 dark:text-gray-300">
-        With over four and a half years of teaching experience, I have served as an external instructor for the
-        Workforce Development Agency, MOL, specializing in courses covering website planning, front-end and back-end
-        development, as well as marketing strategies. I have taught more than 30 classes, benefiting over 900 students
-        in their pursuit of web technology expertise.
+        我有超過四年半的教學經驗，曾擔任
+        勞動部勞動力發展署委外課程的外聘講師，教授課程包含網站企劃、前端與後端開發，以及數位行銷策略。 至今已教授超過 30
+        個班級，累積學員人數超過 900
+        位，協助許多想進入網頁開發領域的學員打下技術基礎。這段經歷不只讓我更擅長傳遞知識，也培養了我清楚表達與同理學習者的能力。
       </p>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />
     </MainContainer>

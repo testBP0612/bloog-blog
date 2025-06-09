@@ -24,15 +24,14 @@ export default function Home() {
               </div>
             </div>
             <p className="mx-auto max-w-lg text-gray-500 md:text-xl dark:text-gray-400">
-              A Frontend Developer with a passion for building user-friendly and accessible web applications.
+              一位熱衷於打造 友善操作且具備無障礙設計 的網頁應用程式的前端工程師。
             </p>
             <p className="mx-auto max-w-lg text-gray-500 md:text-xl dark:text-gray-400">
-              Additionally, I have four years of experience as an instructor in web technologies, enhancing my expertise
-              in creating user-friendly and accessible applications.
+              有四年的教學經驗，專注於網頁技術領域，這段經歷讓我在打造易用介面與理解使用者需求上更加深刻，並能以更清晰的方式傳達技術概念。
             </p>
           </div>
         </div>
-        <Image src="/images/photo.svg" width={600} height={600} alt="photo" />
+        <Image src="/images/photo.svg" width={600} height={600} alt="photo" priority />
       </div>
       <MainContainer>
         <section className="w-full bg-cover bg-center">
