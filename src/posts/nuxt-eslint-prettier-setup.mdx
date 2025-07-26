@@ -8,7 +8,7 @@ tags: ['Nuxt', 'ESLint', 'Prettier']
 
 # 前言
 
-我是從 Next.js 轉來 Nuxt.js 的開發者。過去我熟悉使用 ESLint、Prettier 和 Tailwind CSS 在 React 生態下建構開發環境，不過最近一直在開發新的 Nuxt 3，也希望能延續這樣的開發體驗。所以這篇文章記錄了我在 Nuxt 專案中，如何從零開始整合這些工具，並針對最新版的 ESLint（v9 Flat Config）做出對應調整。
+我一直以來是 Next.js 的開發者，過去熟悉使用 ESLint、Prettier 和 Tailwind CSS 在 React 生態下建構開發環境，不過最近有在開發新的 Nuxt 3 專案，也希望能延續這樣的開發體驗。所以這篇文章記錄了我在 Nuxt 專案中，如何從零開始整合這些工具，並針對最新版的 ESLint（v9 Flat Config）做出對應調整。
 
 在專案中同時使用 ESLint + Prettier 時，如果沒有配置好就會遇到格式化衝突的問題，例如 ESLint 想加分號但 Prettier 不想，或兩者對縮排、換行方式意見不同。這些衝突多半來自於 ESLint 的某些規則與 Prettier 的格式預設值不一致，因此我們需要透過配置來關閉這些可能衝突的規則，並確保 ESLint 把格式化交給 Prettier 處理。
 
@@ -232,7 +232,7 @@ pnpm-lock.yaml
 
 ## 驗證設定是否成功
 
-當所有配置都完成後，記得隨手寫一些程式碼，然後執行 pnpm run lint 和 pnpm run format 來確認所有設定都正常運作。特別是會檢查 Tailwind CSS 的類名排序。
+當所有配置都完成後，記得隨手寫一些程式碼，然後執行 `pnpm run lint` 和 `pnpm run format` 來確認所有設定都正常運作。特別是會檢查 Tailwind CSS 的類名排序。
 
 這些配置流程，雖然看起來步驟不少，但一旦配置完成，未來專案的維護和協作都會變得更加順暢。對我來說，這不僅是新專案的啟動配置，更是一種提升開發體驗和程式碼品質的投資。
 
