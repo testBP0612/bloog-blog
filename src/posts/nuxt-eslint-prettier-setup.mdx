@@ -12,7 +12,7 @@ tags: ['Nuxt', 'ESLint', 'Prettier']
 
 在專案中同時使用 ESLint + Prettier 時，如果沒有配置好就會遇到格式化衝突的問題，例如 ESLint 想加分號但 Prettier 不想，或兩者對縮排、換行方式意見不同。這些衝突多半來自於 ESLint 的某些規則與 Prettier 的格式預設值不一致，因此我們需要透過配置來關閉這些可能衝突的規則，並確保 ESLint 把格式化交給 Prettier 處理。
 
-這份筆記適用於** Nuxt 3 專案**，適合想把基礎設好、減少踩雷的人參考，文章開始前預設你已經有一個可以正常運作的 Nuxt 專案。
+這份筆記適用於 *Nuxt 3 專案*，適合想把基礎設好、減少踩雷的人參考，文章開始前預設你已經有一個可以正常運作的 Nuxt 專案。
 
 ---
 
@@ -210,7 +210,7 @@ pnpm add -D prettier-plugin-tailwindcss
 
 `.eslintignore`：
 
-```
+```shell
 node_modules
 .nuxt
 dist
@@ -219,7 +219,7 @@ dist
 
 `.prettierignore`：
 
-```
+```shell
 node_modules
 .nuxt
 dist
