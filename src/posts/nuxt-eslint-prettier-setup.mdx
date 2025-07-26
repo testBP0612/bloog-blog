@@ -1,0 +1,247 @@
+---
+title: Nuxt 3 專案初始化：ESLint 與 Prettier 配置實戰筆記
+date: '2025-07-26'
+description: 本文分享我如何在 Nuxt 3 全新的專案中，從零開始設定最新版的 ESLint（v9 Flat Config）與 Prettier 並整合 prettier-plugin-tailwindcss，打造出一致、可維護的開發環境。
+thumbnailUrl: /images/blog/nuxt-eslint-prettier-setup/banner.webp
+tags: ['Nuxt', 'ESLint', 'Prettier']
+---
+
+# 前言
+
+我是從 Next.js 轉來 Nuxt.js 的開發者。過去我熟悉使用 ESLint、Prettier 和 Tailwind CSS 在 React 生態下建構開發環境，不過最近一直在開發新的 Nuxt 3，也希望能延續這樣的開發體驗。所以這篇文章記錄了我在 Nuxt 專案中，如何從零開始整合這些工具，並針對最新版的 ESLint（v9 Flat Config）做出對應調整。
+
+在專案中同時使用 ESLint + Prettier 時，如果沒有配置好就會遇到格式化衝突的問題，例如 ESLint 想加分號但 Prettier 不想，或兩者對縮排、換行方式意見不同。這些衝突多半來自於 ESLint 的某些規則與 Prettier 的格式預設值不一致，因此我們需要透過配置來關閉這些可能衝突的規則，並確保 ESLint 把格式化交給 Prettier 處理。
+
+這份筆記適用於** Nuxt 3 專案**，適合想把基礎設好、減少踩雷的人參考，文章開始前預設你已經有一個可以正常運作的 Nuxt 專案。
+
+---
+
+## 為什麼我選這些工具？
+
+對我來說，一個專案能否維持良好的程式碼品質，很大一部分取決於前期的工具設定。以下是我會預設加入的幾個工具，以及選擇它們的理由：
+
+- **ESLint**：能即時幫我找出潛在錯誤與不一致的程式風格，避免小問題演變成大麻煩。
+- **Prettier**：負責格式化程式碼，確保整體風格一致，讓「排版」這件事不再靠個人直覺。
+- **Tailwind CSS**：快速、彈性的原子化 CSS 工具，已經是我 UI 開發的首選。
+- **`prettier-plugin-tailwindcss`**：自動幫把 Tailwind 類名排序好，解決 HTML 看起來很亂的問題。
+
+---
+
+## Nuxt 3 專案的設定流程
+
+### 1. 設定 ESLint（使用最新版 v9+ Flat Config）
+
+首先，當然是 ESLint。先安裝 Nuxt 官方推薦的 ESLint 配置以及其他相關套件：
+
+```bash
+pnpm add -D eslint @nuxt/eslint-config @typescript-eslint/parser @typescript-eslint/eslint-plugin
+```
+
+在過去，配置 ESLint 會在專案根目錄建立 **.eslintrc.js** 檔案。內容通常會像這樣：
+
+```js
+// .eslintrc.js
+module.exports = {
+  root: true,
+  extends: [
+    '@nuxt/eslint-config'
+  ]
+}
+```
+
+但這裡有個重要更新！在 ESLint v9 或更高版本，它的配置方式已經從傳統的 "Configuration Files (rc)" 轉變為新的 "Flat Config (扁平化配置)" 格式。這是一個更現代、更靈活的配置方式，如果在 v9 還使用 rc 等等就會報錯！
+
+對於 ESLint v9+，直接在專案根目錄創建 **eslint.config.js** 檔案。它的寫法會有所不同，如下：
+
+```js
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat';
+
+export default createConfigForNuxt({
+  features: { // 啟用或禁用 ESLint 的特定功能
+    tooling: true,
+    stylistic: false
+  }
+})
+  .append({ // 擴充現有的配置
+    ignores: ['node_modules', '.nuxt', 'dist', '.output'] // 指定忽略的檔案或目錄，過往的 ignores 檔案被移到這裡配置
+  });
+```
+
+這裡的 `createConfigForNuxt` 是 Nuxt 官方提供的工具函數，用於生成適用於 Nuxt 的 ESLint 配置。
+
+這樣一來，ESLint 的基礎配置就完成了，它會根據 Nuxt 的推薦規則來檢查你的程式碼。
+
+---
+
+### 2. 安裝 Prettier 並整合至 ESLint
+
+接著，我會引入 Prettier 來統一程式碼的格式。我需要安裝 Prettier 本身，以及兩個用於與 ESLint 整合的套件：
+
+- `eslint-config-prettier` ：關閉所有與 Prettier 衝突的 ESLint 規則
+- `eslint-plugin-prettier` ：把 Prettier 的格式化錯誤當作 ESLint 的錯誤
+
+```bash
+pnpm add -D prettier eslint-config-prettier eslint-plugin-prettier
+```
+
+建立 `.prettierrc`：
+
+```json
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "printWidth": 100,
+}
+```
+
+整合 Prettier 至 ESLint：
+
+```js
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat';
+import prettier from 'eslint-plugin-prettier';
+
+export default createConfigForNuxt({
+  features: {
+    tooling: true,
+    stylistic: false
+  }
+})
+  .append({
+    ignores: ['node_modules', '.nuxt', 'dist', '.output']
+  })
+  .append({
+    plugins: { prettier },
+    rules: {
+      'prettier/prettier': 'error' // 必須設定，將 Prettier 的格式化錯誤當作 ESLint 的錯誤報告出來
+    }
+  });
+```
+
+現在只要你的程式碼格式不符合 Prettier，VS Code 的 ESLint 擴充就會直接顯示錯誤提示。
+
+---
+
+### 3. 加入 prettier-plugin-tailwindcss
+
+老實說自己在寫 Tailwind 的時候，經常會隨性地寫類名的順序，導致程式碼看起來很亂，而這插件就是讓 HTML 程式碼保持整潔的關鍵！prettier-plugin-tailwindcss 會自動根據 Tailwind CSS 的建議順序來幫你排序類名。
+
+首先，安裝這個 Prettier 插件：
+
+```bash
+pnpm add -D prettier-plugin-tailwindcss
+```
+
+更新 `.prettierrc`：
+
+```json
+{
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "none",
+  "printWidth": 80,
+  "plugins": ["prettier-plugin-tailwindcss"]
+}
+```
+
+現在，每當格式化程式碼時，即使 Tailwind CSS 類名的順序寫得亂七八糟，它們也會被自動整理好，例如：
+
+```html
+<ul class="flex space-x-4">
+  <li><a href="#" class="text-white hover:text-blue-200">首頁</a></li>
+  <li><a href="#" class="hover:text-blue-200 text-white">關於</a></li> <!-- 錯誤的順序 -->
+  <li><a href="#" class="text-white hover:text-blue-200">聯絡</a></li>
+</ul>
+```
+
+執行 `pnpm run format` 後，它會自動將類名排序，變成這樣：
+
+```html
+<ul class="flex space-x-4">
+  <li><a href="#" class="text-white hover:text-blue-200">首頁</a></li>
+  <li><a href="#" class="text-white hover:text-blue-200">關於</a></li> <!-- 修復成正確的順序 -->
+  <li><a href="#" class="text-white hover:text-blue-200">聯絡</a></li>
+</ul>
+```
+
+即便今天不是多人維護的專案，這樣的設定也能讓自己的程式碼保持一致性，不會因為個人習慣而導致程式碼看起來很亂。~~而且看起來很爽~~。
+
+---
+
+### 4. VS Code 的個人化配置，讓開發更流暢（可選）
+
+接下來，我會設定 VS Code 來自動格式化程式碼。這樣一來當保存檔案時，VS Code 就會自動執行 `pnpm run format`，確保程式碼符合 Prettier 的格式。
+
+建立 `.vscode/settings.json`：
+
+```json
+{
+  "editor.formatOnSave": true, // 儲存時自動格式化
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // 設定 Prettier 為預設格式化工具
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit" // 儲存時自動修復所有 ESLint 錯誤
+  }
+}
+```
+
+---
+
+### 5. `package.json` 加入 scripts
+
+別忘了也要在 `package.json` 中加入腳本執行 ESLint 和 Prettier，未來如果要使用一些 CI/CD 工具，也可以更容易的整合。
+
+```json
+{
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
+  }
+}
+```
+
+---
+
+### 6. 忽略檔案設定
+
+最後，我們需要設定一些忽略檔案，讓 ESLint 和 Prettier 不會檢查這些檔案。通常是一些編譯後的檔案、依賴資料夾等等。
+
+`.eslintignore`：
+
+```
+node_modules
+.nuxt
+dist
+.output
+```
+
+`.prettierignore`：
+
+```
+node_modules
+.nuxt
+dist
+.output
+package-lock.json
+pnpm-lock.yaml
+```
+
+---
+
+## 驗證設定是否成功
+
+當所有配置都完成後，記得隨手寫一些程式碼，然後執行 pnpm run lint 和 pnpm run format 來確認所有設定都正常運作。特別是會檢查 Tailwind CSS 的類名排序。
+
+這些配置流程，雖然看起來步驟不少，但一旦配置完成，未來專案的維護和協作都會變得更加順暢。對我來說，這不僅是新專案的啟動配置，更是一種提升開發體驗和程式碼品質的投資。
+
+這篇文章算是自己的一個小筆記，也希望對正在開始新專案的你有所幫助。
+
+---
+
+## 參考資料
+
+- [Nuxt ESLint Config](https://eslint.nuxt.com/packages/config)
+- [Prettier](https://prettier.io/)
+- [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss)
